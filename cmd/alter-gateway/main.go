@@ -4,42 +4,40 @@
 @File : main.go
 @Software: GoLand
 */
-package main
+package alter_gateway
 
 import (
-	"log"
-	"os"
-	"strconv"
+	"github.com/spf13/cobra"
 
-	"xing-doraemon/cmd/alter-gateway/Datamanager"
-	"xing-doraemon/cmd/alter-gateway/Datamanager/MongoDataManger"
-	"xing-doraemon/cmd/alter-gateway/NetService"
+	"xing-doraemon/gobal"
 )
 
-var (
-	httpPort int
-	Info     = log.New(os.Stdout, "\x1b[36m[INFO]\x1b[0m", log.LstdFlags|log.Lshortfile)
-	Error    = log.New(os.Stdout, "\x1b[31m[INFO]\x1b[0m", log.LstdFlags|log.Lshortfile)
-)
+func init() {
+	AlterGatewayCmd.Flags().StringVarP(&configPath, "conf-path", "c", "", "配置文件路径")
+}
 
-func main() {
-	for index, k := range os.Args {
-		if k == "--mongo" {
-			MongoDataManger.MongoUrl = os.Args[index+1]
-		} else if k == "--http-port" {
-			httpPort, _ = strconv.Atoi(os.Args[index+1])
-		}
+var configPath string
+var AlterGatewayCmd = &cobra.Command{
+	Use:   "gateway",
+	Short: "alter gateway service",
+	Run: func(cmd *cobra.Command, args []string) {
+		AlterGatewayRunFunc()
+	},
+}
+
+func AlterGatewayRunFunc() {
+	if err := SetUp(); err != nil {
+		gobal.GetLogger().Panic("set up fail: ", err)
 	}
-	//1. InitDataManager
-	Info.Println("Start init DataManger")
-	if err := Datamanager.Init(); err != nil {
-		Error.Println("Init DataManager fail: ", err)
-		os.Exit(-1)
+	gobal.GetLogger().Info("set up success")
+}
+
+func SetUp() error {
+	if err := gobal.InitAlterGatewayConfig(configPath); err != nil {
+		return err
 	}
-	Info.Println("Start Http Service")
-	var httpService NetService.NetService
-	if err := httpService.StartWork(httpPort); err != nil {
-		Error.Println("init http Service fail")
-		os.Exit(1)
+	if err := gobal.InitLdap(gobal.GetAlterGatewayConfig().Ldap); err != nil {
+		return err
 	}
+	return nil
 }

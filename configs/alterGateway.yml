@@ -1,0 +1,43 @@
+App:
+  Appname: "doraemon"
+  Httpport: 8080
+  Runmode: "dev"
+  Autorender: false
+  Copyrequestbody: true
+  Sessionon: true
+  EnableDocs: true
+
+Mysql:
+  DBType : "mysql"
+  DBName: "doraemon"
+  DBTns: "localhost:3306"
+  DBUser: "xing"
+  DBPasswd: "123456"
+  DBLoc: "Asia%2FShanghai"
+  DBConnTTL: 5
+
+Send:
+  SmsUrl: "http://localhost:80/api/v1/sms"
+  LanxinUrl: "http://localhost:80/api/v1/lanxin/text"
+  CallUrl: "http://localhost:80/api/v1/lanxin/call"
+  DutyGroupUrl: "http://localhost:80/Api/getDutyUser"
+  BrokenUrl: "http://localhost:80/api/hosts/broken"
+  WebUrl: "http://localhost:80"
+
+Oauth2:
+  AuthUrl: "https://localhost:80"
+  ClientId: "xxxxxxxxxxxxxx"
+  ClientSecret: "xxxxxxxxxxxxxx"
+  TokenUrl: "https://localhost:80"
+  ApiUrl: "https://localhost:80"
+
+Ldap:
+  Enabled: false
+  LdapUrl: "ldap://127.0.0.1"
+  LdapSearchDn: "cn:admin,dc:example,dc:com"
+  LdapSearchPassword: "admin"
+  LdapBaseDn: "dc:example,dc:com"
+  LdapFilter: ""
+  LdapUid: "cn"
+  LdapScope: 2
+  LdapConnectionTimeout: 30

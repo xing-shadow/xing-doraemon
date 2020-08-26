@@ -4,7 +4,7 @@
 @File : main_test.go
 @Software: GoLand
 */
-package xing_doraemon
+package main
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 )
 
 func TestUrl(t *testing.T) {
-	parseUrl,err := url.Parse("http://222.213.16.50:42001/dasdas/index.html")
+	parseUrl, err := url.Parse("http://222.213.16.50:42001/dasdas/index.html")
 	if err != nil {
 		t.Fatal(err)
 	}
