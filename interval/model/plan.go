@@ -12,6 +12,6 @@ type Plans struct {
 	Description string `gorm:"column:description;size:1023" json:"description"`
 }
 
-func (*Plans) TableName() string {
+func (Plans) TableName() string {
 	return "plan"
 }

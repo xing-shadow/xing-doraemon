@@ -7,8 +7,22 @@
 package common
 
 import (
+	"bytes"
+	"errors"
+	"net/http"
+	"sync"
 	"time"
 )
+
+var ErrHttpRequest = errors.New("create HTTP request failed")
+var Maintain map[string]bool
+var RuleCount map[[2]int64]int64
+var Recover2Send = map[string]map[[2]int64]*Ready2Send{
+	AlertMethodLanxin: {},
+}
+
+var Lock sync.Mutex
+var Rw sync.RWMutex
 
 // AuthModel holds information used to authenticate.
 type AuthModel struct {
@@ -65,6 +79,24 @@ type UserGroup struct {
 	Method                string
 }
 
+/*
+ Check if UserGroup is valid.
+*/
+func (u UserGroup) IsValid() bool {
+	return u.User != "" || u.DutyGroup != "" || u.Group != ""
+}
+
+/*
+ IsOnDuty return if current UserGroup is on duty or not by StartTime & EndTime.
+ If the UserGroup is not on duty, alerts should not be sent to them.
+*/
+func (u UserGroup) IsOnDuty() bool {
+	now := time.Now().Format("15:04")
+
+	return (u.StartTime <= u.EndTime && u.StartTime <= now && u.EndTime >= now) || // 不跨 00:00
+		(u.StartTime > u.EndTime && (u.StartTime <= now || now <= u.EndTime)) // // 跨 00:00
+}
+
 type Alerts []Alert
 
 type Alert struct {
@@ -109,4 +141,58 @@ type ValidUserGroup struct {
 	User      string
 	Group     string
 	DutyGroup string
+}
+
+func GenerateJsonHeader() map[string]string {
+	return map[string]string{
+		"Content-Type": "application/json",
+	}
+}
+
+func HttpPost(url string, param map[string]string, headers map[string]string, body []byte) (*http.Response, error) {
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+	if err != nil {
+		return nil, ErrHttpRequest
+	}
+	//add params
+	q := req.URL.Query()
+	if param != nil {
+		for key, val := range param {
+			q.Add(key, val)
+		}
+		req.URL.RawQuery = q.Encode()
+	}
+	//add headers
+	if headers != nil {
+		for key, val := range headers {
+			req.Header.Add(key, val)
+		}
+	}
+	//http client
+	client := http.Client{Timeout: time.Second * 5}
+	return client.Do(req)
+}
+
+func HttpGet(url string, param map[string]string, headers map[string]string) (*http.Response, error) {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, ErrHttpRequest
+	}
+	//add params
+	q := req.URL.Query()
+	if param != nil {
+		for key, val := range param {
+			q.Add(key, val)
+		}
+		req.URL.RawQuery = q.Encode()
+	}
+	//add headers
+	if headers != nil {
+		for key, val := range headers {
+			req.Header.Add(key, val)
+		}
+	}
+	//http client
+	client := http.Client{Timeout: time.Second * 5}
+	return client.Do(req)
 }

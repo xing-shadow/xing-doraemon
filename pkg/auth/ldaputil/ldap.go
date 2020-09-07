@@ -4,15 +4,13 @@
 @File : ldap.go
 @Software: GoLand
 */
-package auth
+package ldaputil
 
 import (
 	"fmt"
 	"github.com/pkg/errors"
 
 	"github.com/go-ldap/ldap"
-
-	"xing-doraemon/gobal"
 )
 
 var (
@@ -93,7 +91,6 @@ func (c *LdapClient) Authenticate(username, password string) error {
 	}
 
 	if len(sr.Entries) != 1 {
-		gobal.GetLogger().Debugf("len(sr.Entries)=%d", len(sr.Entries))
 		return ErrLdapAuthFail
 	}
 

@@ -12,6 +12,6 @@ type Proms struct {
 	Url  string `gorm:"size:1023" json:"url"`
 }
 
-func (*Proms) TableName() string {
+func (Proms) TableName() string {
 	return "prom"
 }

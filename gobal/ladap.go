@@ -9,13 +9,13 @@ package gobal
 import (
 	"github.com/go-ldap/ldap"
 
-	"xing-doraemon/pkg/auth"
+	"xing-doraemon/pkg/auth/ldaputil"
 	"xing-doraemon/pkg/setting/alterGateway"
 )
 
 func InitLdap(ldapCfg alterGateway.Ldap) error {
 	if ldapCfg.Enabled {
-		_ldapCfg := &auth.LdapConfig{
+		_ldapCfg := &ldaputil.LdapConfig{
 			Url:          ldapCfg.LdapUrl,
 			BaseDN:       ldapCfg.LdapBaseDn,
 			Scope:        parseLdapScope(ldapCfg.LdapScope),
@@ -23,7 +23,7 @@ func InitLdap(ldapCfg alterGateway.Ldap) error {
 			BindPassword: ldapCfg.LdapSearchPassword,
 			Filter:       ldapCfg.LdapFilter,
 		}
-		auth.InitLdap(_ldapCfg)
+		ldaputil.InitLdap(_ldapCfg)
 		return nil
 	} else {
 		return nil

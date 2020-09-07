@@ -12,6 +12,10 @@ type Hosts struct {
 	Hostname string `gorm:"size:255" json:"hostname"`
 }
 
-func (*Hosts) TableName() string {
+func (Hosts) TableName() string {
 	return "host"
+}
+
+func (h *Hosts) SetName() {
+	h.Mid = 1
 }

@@ -25,6 +25,6 @@ type Maintains struct {
 	Valid *time.Time `json:"valid"`
 }
 
-func (*Maintains) TableName() string {
+func (Maintains) TableName() string {
 	return "maintain"
 }

@@ -34,6 +34,6 @@ type Rec struct {
 	Method     string `json:"method"`
 }
 
-func (*Receivers) TableName() string {
+func (Receivers) TableName() string {
 	return "plan_receiver"
 }

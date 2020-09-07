@@ -49,6 +49,6 @@ type ShowAlerts struct {
 	Total  int64                 `json:"total"`
 }
 
-func (*Alerts) TableName() string {
+func (Alerts) TableName() string {
 	return "alert"
 }
