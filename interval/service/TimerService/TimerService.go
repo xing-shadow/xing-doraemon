@@ -71,7 +71,6 @@ func UpdateMaintainlist() {
 	}{}
 	Invoker.GetDB().Table(model.Maintains{}.TableName()).Select("id").
 		Where("valid>=? AND day_start<=? AND day_end>=? AND (flag=true AND (time_start<=? OR time_end>=?) OR flag=false AND time_start<=? AND time_end>=?) AND month&"+strconv.Itoa(int(math.Pow(2, float64(time.Now().Month()))))+">0", datetime.Format("2006-01-02 15:04:05"), datetime.Day(), datetime.Day(), now, now, now, now).Find(&maintainIds)
-	//TODO
 	m := map[string]bool{}
 	for _, mid := range maintainIds {
 		hosts := []struct {
@@ -218,13 +217,12 @@ func InitTimerService() {
 					}
 				}()
 				var info []Record
-				Invoker.GetDB().Model(&model.Alerts{}).Update(map[string]string{
-					"state": "2",
-				}).Where("status = ? AND confirmed_before < ?", 1, now).Find(&info)
+				//Invoker.GetDB().Exec("UPDATE alert SET status=? WHERE status=? AND confirmed_before<?",2,1,now)
+				Invoker.GetDB().Model(&model.Alerts{}).Where("status=? AND confirmed_before<?", 1, now).Update("status", 2)
 				tx := Invoker.GetDB().Begin()
 				tx.Exec("UPDATE alert SET count=count+1 WHERE status!=0")
 				tx.Table(model.Alerts{}.TableName()).Select("id,rule_id,value,count,summary,description,hostname,confirmed_before,fired_at,labels").
-					Where("status = ? ", 2).Find(&info)
+					Where("status=?", 2).Find(&info)
 				//filter alters
 				aggregation := map[int64][]Record{}
 				maxCount := map[int64]int{}
@@ -251,7 +249,7 @@ func InitTimerService() {
 					//"HOOK":   map[[2]int64]*common.Ready2Send{},
 				}
 				common.Lock.Unlock()
-				gobal.GetLogger().Info("Recoveries to send:%v", recover2send)
+				gobal.GetLogger().Infof("Recoveries to send:%v", recover2send)
 				RecoverSender(recover2send, now)
 			}()
 		}

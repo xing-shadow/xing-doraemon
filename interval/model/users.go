@@ -29,7 +29,7 @@ func (u Users) TableName() string {
 func (u *Users) CheckUser(db *gorm.DB, userinfo common.AuthModel) (*common.AuthModel, error) {
 	var results Users
 	if err := db.Table(u.TableName()).Select("id,password").
-		Where(" name = ?", userinfo.Username).First(&results).Error; err != nil {
+		Where("name=?", userinfo.Username).First(&results).Error; err != nil {
 		return nil, err
 	}
 	hash := fmt.Sprintf("%x", md5.Sum([]byte(userinfo.Password)))
@@ -54,14 +54,14 @@ func (u *Users) AddUser(db *gorm.DB) error {
 func (u *Users) UpdatePassword(db *gorm.DB, name string, oldPassword string, newPassword string) error {
 	var user []Users
 	if err := db.Select(u.TableName()).Select("id,name,password").
-		Where("name = ?", name).Find(&user).Error; err != nil {
+		Where("name=?", name).Find(&user).Error; err != nil {
 		return err
 	} else {
 		if len(user) > 0 {
 			if user[0].Password == fmt.Sprintf("%x", md5.Sum([]byte(oldPassword))) {
 				updateErr := db.Model(&Users{}).Update(map[string]interface{}{
 					"password": fmt.Sprintf("%x", md5.Sum([]byte(newPassword))),
-				}).Where("name = ? ", name).Error
+				}).Where("name=?", name).Error
 				return errors.Wrap(updateErr, "database update error")
 			} else {
 				return errors.Errorf("wrong password")
@@ -73,7 +73,7 @@ func (u *Users) UpdatePassword(db *gorm.DB, name string, oldPassword string, new
 }
 
 func (u *Users) DeleteUsers(db *gorm.DB, id string) error {
-	if err := db.Where("id = ?", id).Delete(&Users{}).Error; err != nil {
+	if err := db.Where("id=?", id).Delete(&Users{}).Error; err != nil {
 		return errors.Wrap(err, "database delete error")
 	} else {
 		return err

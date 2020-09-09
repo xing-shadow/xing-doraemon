@@ -6,6 +6,13 @@
 */
 package model
 
+import (
+	"fmt"
+
+	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
+)
+
 type Receivers struct {
 	Id                    int64  `orm:"auto" json:"id,omitempty"`
 	Plan                  *Plans `orm:"index;rel(fk)" json:"plan_id"`
@@ -36,4 +43,34 @@ type Rec struct {
 
 func (Receivers) TableName() string {
 	return "plan_receiver"
+}
+
+func (r *Receivers) GetAllReceivers(db *gorm.DB, planid string) []Rec {
+	receivers := []Rec{}
+	db.Select("id,start_time,end_time,start,period,expression,user,group,duty_group,method").
+		Where("id=?", planid).Find(&receivers)
+	return receivers
+}
+
+func (r *Receivers) AddReceiver(db *gorm.DB) error {
+	var planId []struct{ Id int64 }
+	tx := db.Begin()
+	err := tx.Table(Plans{}.TableName()).Where("id = ? LOCK IN SHARE MODE", r.Plan.Id).Find(&planId).Error
+	if err == nil || errors.Is(err, gorm.ErrRecordNotFound) {
+		if len(planId) > 0 {
+			errCreate := tx.Create(&r).Error
+			if errCreate != nil {
+				tx.Rollback()
+				return errors.Wrap(err, "database insert error")
+			}
+		} else {
+			tx.Commit()
+			return fmt.Errorf("plan id: %v is not exsit", r.Plan.Id)
+		}
+	} else {
+		tx.Rollback()
+		return errors.Wrap(err, "database query error")
+	}
+	tx.Commit()
+	return errors.Wrap(err, "database insert error")
 }

@@ -53,9 +53,9 @@ func (r *Rules) InsertRule(db *gorm.DB) error {
 	var prom []struct{ PromId int64 }
 	var plan []struct{ PlanId int64 }
 	tx := db.Begin()
-	err := tx.Table(Proms{}.TableName()).Select("id").Where("id = ? LOCK IN SHARE MODE", r.Prom.Id).Find(&prom).Error
+	err := tx.Table(Proms{}.TableName()).Select("id").Where("id=? LOCK IN SHARE MODE", r.Prom.Id).Find(&prom).Error
 	if err == nil && len(prom) > 0 {
-		err = tx.Table(Plans{}.TableName()).Select("id").Where("id = ? LOCK IN SHARE MODE", r.Plan.Id).Find(&plan).Error
+		err = tx.Table(Plans{}.TableName()).Select("id").Where("id=? LOCK IN SHARE MODE", r.Plan.Id).Find(&plan).Error
 		if err == nil && len(plan) > 0 {
 			err = tx.Table(r.TableName()).Create(r).Error
 			if err != nil {
@@ -64,6 +64,7 @@ func (r *Rules) InsertRule(db *gorm.DB) error {
 				return errors.Wrap(err, "database insert error")
 			}
 			tx.Commit()
+			return nil
 		} else {
 			tx.Rollback()
 			logger.Errorf("The plan_id %s is invalid", r.Plan.Id)
@@ -74,7 +75,6 @@ func (r *Rules) InsertRule(db *gorm.DB) error {
 		logger.Errorf("The prom_id %s is invalid", r.Prom.Id)
 		return fmt.Errorf("invalid prom_id %v", r.Prom.Id)
 	}
-	return errors.Wrap(err, "database insert error")
 }
 
 func (r *Rules) UpdateRule(db *gorm.DB) error {
@@ -82,12 +82,12 @@ func (r *Rules) UpdateRule(db *gorm.DB) error {
 	var prom []struct{ PromId int64 }
 	var plan []struct{ PlanId int64 }
 	tx := db.Begin()
-	err := tx.Table(Proms{}.TableName()).Select("id").Where("id = ? LOCK IN SHARE MODE", r.Prom.Id).Find(&prom).Error
+	err := tx.Table(Proms{}.TableName()).Select("id").Where("id=? LOCK IN SHARE MODE", r.Prom.Id).Find(&prom).Error
 	if err == nil && len(prom) > 0 {
-		err = tx.Table(Plans{}.TableName()).Select("id").Where("id = ? LOCK IN SHARE MODE", r.Plan.Id).Find(&plan).Error
+		err = tx.Table(Plans{}.TableName()).Select("id").Where("id=? LOCK IN SHARE MODE", r.Plan.Id).Find(&plan).Error
 		//fmt.Println(plan)
 		if err == nil && len(plan) > 0 {
-			err = tx.Table(r.TableName()).Where("id = ?", r.Id).Update(r).Error
+			err = tx.Model(&Rules{}).Where("id=?", r.Id).Update(r).Error
 			if err != nil {
 				logger.Errorf("update rule error:%v", err)
 				tx.Rollback()
@@ -109,7 +109,7 @@ func (r *Rules) UpdateRule(db *gorm.DB) error {
 }
 
 func (r *Rules) DeleteRule(db *gorm.DB, Id string) error {
-	err := db.Table(r.TableName()).Where("id = ? ", Id).Delete(&Rules{}).Error
+	err := db.Where("id=?", Id).Delete(&Rules{}).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}

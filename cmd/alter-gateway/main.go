@@ -7,9 +7,14 @@
 package alter_gateway
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/spf13/cobra"
 
 	"xing-doraemon/gobal"
+	"xing-doraemon/interval/service"
 )
 
 func init() {
@@ -30,6 +35,14 @@ func AlterGatewayRunFunc() {
 		gobal.GetLogger().Panic("set up fail: ", err)
 	}
 	gobal.GetLogger().Info("set up success")
+	if err := service.Init(); err != nil {
+		gobal.GetLogger().Panic("service init fail: ", err)
+	}
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGINT)
+	switch <-quit {
+
+	}
 }
 
 func SetUp() error {

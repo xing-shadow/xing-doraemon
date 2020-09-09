@@ -78,10 +78,10 @@ func InitHttpService() error {
 	/*
 		alerts
 	*/
-	{ // TODO write code
+	{
 		alertHandler := &Handler.AlertHandler{}
 		api.GET("/alerts", alertHandler.GetAlerts)
-		api.GET("/alerts/:ruleid", alertHandler.ShowAlerts)
+		api.GET("/alerts/rules/:ruleid", alertHandler.ShowAlerts)
 		api.GET("/alerts/classify", alertHandler.ClassifyAlerts)
 		api.PUT("/alerts", alertHandler.Confirm)
 		api.POST("/alerts", alertHandler.HandleAlerts)
@@ -94,15 +94,16 @@ func InitHttpService() error {
 		api.GET("/plans", planHandler.GetAllPlans)
 		api.POST("/plans", planHandler.AddPlan)
 		api.GET("/plans/:planid/receivers", planHandler.GetAllReceiver)
-		api.GET("/plans/:planid/receivers", planHandler.AddReceiver)
+		api.POST("/plans/:planid/receivers", planHandler.AddReceiver)
 		api.PUT("/plans/:planid", planHandler.UpdatePlan)
-		api.GET("/plans/:planid", planHandler.DeletePlan)
+		api.DELETE("/plans/:planid", planHandler.DeletePlan)
 
 	}
 	/*
 		receivers
 	*/
 	{
+		// TODO write code
 		receiverHandler := &Handler.ReceiversHandler{}
 		api.PUT("/receivers/:receiverid", receiverHandler.UpdateReceiver)
 		api.DELETE("/receivers/:receiverid", receiverHandler.DeleteReceiver)
