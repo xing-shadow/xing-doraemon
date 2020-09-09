@@ -8,6 +8,7 @@ package model
 
 import (
 	"encoding/json"
+	"github.com/pkg/errors"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -75,4 +76,25 @@ func SendAlertsFor(db *gorm.DB, VUG *common.ValidUserGroup) []string {
 		res = append(res, key)
 	}
 	return res
+}
+
+func (g *Groups) GetAll(db *gorm.DB) []Groups {
+	groups := []Groups{}
+	db.Table(g.TableName()).Find(&groups)
+	return groups
+}
+
+func (g *Groups) AddGroup(db *gorm.DB) error {
+	err := db.Create(&g).Error
+	return errors.Wrap(err, "database insert error")
+}
+
+func (g *Groups) UpdateGroup(db *gorm.DB) error {
+	err := db.Model(&Groups{}).Where("id=?", g.Id).Updates(g).Error
+	return errors.Wrap(err, "database update error")
+}
+
+func (g *Groups) DeleteGroup(db *gorm.DB, id string) error {
+	err := db.Where("id=?", g.Id).Delete(&Groups{}).Error
+	return errors.Wrap(err, "database delete error")
 }

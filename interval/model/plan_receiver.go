@@ -74,3 +74,24 @@ func (r *Receivers) AddReceiver(db *gorm.DB) error {
 	tx.Commit()
 	return errors.Wrap(err, "database insert error")
 }
+
+func (r *Receivers) UpdateReceiver(db *gorm.DB) error {
+	err := db.Model(&Receivers{}).Where("id=?", r.Id).Updates(map[string]interface{}{
+		"start_time":              r.StartTime,
+		"end_time":                r.EndTime,
+		"start":                   r.Start,
+		"period":                  r.Period,
+		"expression":              r.Expression,
+		"reverse_polish_notation": r.ReversePolishNotation,
+		"user":                    r.User,
+		"group":                   r.Group,
+		"duty_group":              r.DutyGroup,
+		"method":                  r.Method,
+	}).Error
+	return errors.Wrap(err, "database update error")
+}
+
+func (r *Receivers) DeleteReceiver(db *gorm.DB, id string) error {
+	err := db.Where("id=?", id).Delete(&Receivers{}).Error
+	return errors.Wrap(err, "database delete error")
+}
