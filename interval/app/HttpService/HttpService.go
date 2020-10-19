@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"xing-doraemon/interval/app/HttpService/Handler"
+	"xing-doraemon/pkg/app/Resp"
 
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -38,8 +40,9 @@ func Init() error {
 		rules
 	*/
 	{
-		api.GET("/rules")
-		api.POST("/rule")
+		api.POST("/rules", Resp.Handle(Handler.GetRuleAll))
+		api.POST("/rule", Resp.Handle(Handler.CreateRule))
+		api.PUT("/rule/:ruleid", Resp.Handle(Handler.ModifyRule))
 		api.DELETE("/rule/:ruleid")
 	}
 	/*
