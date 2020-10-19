@@ -15,26 +15,15 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-
 	"xing-doraemon/gobal"
+	mysqlDB "xing-doraemon/interval/model/db"
 )
 
 var (
 	doraemonMysql *gorm.DB
 )
 
-func GetDB() *gorm.DB {
-	return doraemonMysql
-}
-
-func Init() error {
-	if err := InitDB(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func InitDB() error {
+func InitMysqlInvoker() (*gorm.DB, error) {
 	cfg := gobal.GetAlterGatewayConfig().Mysql
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		cfg.DBUser,
@@ -44,17 +33,17 @@ func InitDB() error {
 		cfg.DBLoc)
 	db, err := gorm.Open(cfg.DBType, dsn)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if err := ensureDatabase(db, dsn, cfg.DBName); err != nil {
-		return err
+		return nil, err
 	}
 	doraemonMysql = db
 	doraemonMysql.SingularTable(true)
 	doraemonMysql.LogMode(true)
 	doraemonMysql.DB().SetMaxIdleConns(10)
 	doraemonMysql.DB().SetMaxOpenConns(100)
-	return nil
+	return doraemonMysql, nil
 }
 
 func ensureDatabase(db *gorm.DB, dsn string, dbName string) error {
@@ -86,21 +75,19 @@ func ensureDatabase(db *gorm.DB, dsn string, dbName string) error {
 		}
 	}
 	// database created, maybe by DBA, but tables not created yet
-	if !needInit {
-		sql := fmt.Sprintf("show tables from %s;", dbName)
-		if rows, err := db.DB().Query(sql); err == nil && !rows.Next() {
-			needInit = true
+	if needInit {
+		models := []interface{}{
+			&mysqlDB.Alert{},
+			&mysqlDB.Rule{},
+			&mysqlDB.Prom{},
+			&mysqlDB.User{},
+			&mysqlDB.Plan{},
 		}
+		db.SingularTable(true)
+		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(models...)
+		gobal.GetLogger().Info("create tables ok")
 	}
 	gobal.GetLogger().Debugf("Initialize database connection: %s", dsn)
-	if needInit {
-		for _, insertSql := range InitialData {
-			_, err := db.DB().Exec(insertSql)
-			if err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 
