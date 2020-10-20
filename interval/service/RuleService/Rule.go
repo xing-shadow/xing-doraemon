@@ -3,7 +3,7 @@ package RuleService
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"xing-doraemon/gobal"
+	"xing-doraemon/global"
 	"xing-doraemon/interval/model/db"
 	"xing-doraemon/interval/model/view"
 )
@@ -21,12 +21,12 @@ func GetAllRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 	offset = (page - 1) * pageSize
 	err = opt.DB.Find(&rules).Offset(offset).Limit(pageSize).Error
 	if err != nil {
-		gobal.GetLogger().Error("get rules from mysql fail:", err)
+		global.GetLogger().Error("get rules from mysql fail:", err)
 		return
 	}
 	err = opt.DB.Model(&db.Rule{}).Count(&count).Error
 	if err != nil {
-		gobal.GetLogger().Error("get rules counts from mysql fail:", err)
+		global.GetLogger().Error("get rules counts from mysql fail:", err)
 		return
 	}
 	resp.Total = count

@@ -26,3 +26,7 @@ type ModifyRuleReq struct {
 	PlanID      uint   `json:"plan_id" bind:"required"`
 	Prom        uint   `json:"prom" bind:"required"`
 }
+
+type DeleteRuleReq struct {
+	ID uint `json:"id"`
+}

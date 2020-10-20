@@ -4,7 +4,7 @@
 @File : Logger.go
 @Software: GoLand
 */
-package gobal
+package global
 
 import (
 	"github.com/sirupsen/logrus"

@@ -48,7 +48,7 @@ func CreateRule(ctx *Resp.Context) {
 
 func ModifyRule(ctx *Resp.Context) {
 	var param view.ModifyRuleReq
-	ruleID, err := strconv.Atoi(ctx.Param("ruleid"))
+	ruleID, err := strconv.Atoi(ctx.Param("ruleId"))
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -71,4 +71,18 @@ func ModifyRule(ctx *Resp.Context) {
 	}
 	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK))
 	return
+}
+
+func DeleteRule(ctx *Resp.Context) {
+	var param view.ModifyRuleReq
+	ruleID, err := strconv.Atoi(ctx.Param("ruleId"))
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	if ruleID < 1 {
+		ctx.ToResponse(Resp.MsgError, "invalid param", ctx.WithStatus(http.StatusOK))
+		return
+	}
+	param.ID = uint(ruleID)
 }

@@ -15,7 +15,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"xing-doraemon/gobal"
+	"xing-doraemon/global"
 	mysqlDB "xing-doraemon/interval/model/db"
 )
 
@@ -24,7 +24,7 @@ var (
 )
 
 func InitMysqlInvoker() (*gorm.DB, error) {
-	cfg := gobal.GetAlterGatewayConfig().Mysql
+	cfg := global.GetAlterGatewayConfig().Mysql
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		cfg.DBUser,
 		cfg.DBPasswd,
@@ -85,9 +85,9 @@ func ensureDatabase(db *gorm.DB, dsn string, dbName string) error {
 		}
 		db.SingularTable(true)
 		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(models...)
-		gobal.GetLogger().Info("create tables ok")
+		global.GetLogger().Info("create tables ok")
 	}
-	gobal.GetLogger().Debugf("Initialize database connection: %s", dsn)
+	global.GetLogger().Debugf("Initialize database connection: %s", dsn)
 	return nil
 }
 

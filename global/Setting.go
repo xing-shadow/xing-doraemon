@@ -4,7 +4,7 @@
 @File : Setting.go
 @Software: GoLand
 */
-package gobal
+package global
 
 import (
 	"xing-doraemon/pkg/setting"

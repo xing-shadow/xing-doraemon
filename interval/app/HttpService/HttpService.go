@@ -16,7 +16,7 @@ import (
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	"xing-doraemon/gobal"
+	"xing-doraemon/global"
 )
 
 func Init() error {
@@ -40,17 +40,17 @@ func Init() error {
 		rules
 	*/
 	{
-		api.POST("/rules", Resp.Handle(Handler.GetRuleAll))
+		api.GET("/rules", Resp.Handle(Handler.GetRuleAll))
 		api.POST("/rule", Resp.Handle(Handler.CreateRule))
-		api.PUT("/rule/:ruleid", Resp.Handle(Handler.ModifyRule))
-		api.DELETE("/rule/:ruleid")
+		api.PUT("/rule/:ruleId", Resp.Handle(Handler.ModifyRule))
+		api.DELETE("/rule/:ruleId")
 	}
 	/*
 		alerts
 	*/
 	{
 		api.GET("/alerts")
-		api.GET("/alerts/rules/:ruleid")
+		api.GET("/alerts/rules/:ruleId")
 		api.GET("/alerts/classify")
 		api.PUT("/alerts")
 		api.POST("/alerts")
@@ -61,10 +61,10 @@ func Init() error {
 	{
 		api.GET("/plans")
 		api.POST("/plans")
-		api.GET("/plans/:planid/receivers")
-		api.POST("/plans/:planid/receivers")
-		api.PUT("/plans/:planid")
-		api.DELETE("/plans/:planid")
+		api.GET("/plans/:planId/receivers")
+		api.POST("/plans/:planId/receivers")
+		api.PUT("/plans/:planId")
+		api.DELETE("/plans/:planId")
 
 	}
 	/*
@@ -77,14 +77,14 @@ func Init() error {
 		api.DELETE("/proms/:id")
 	}
 	service := http.Server{
-		Addr:         fmt.Sprintf(":%d", gobal.GetAlterGatewayConfig().App.Httpport),
+		Addr:         fmt.Sprintf(":%d", global.GetAlterGatewayConfig().App.Httpport),
 		Handler:      router,
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}
 	go func() {
 		if err := service.ListenAndServe(); err != nil {
-			gobal.GetLogger().Panic("start Service fail: ", err)
+			global.GetLogger().Panic("start Service fail: ", err)
 		}
 	}()
 	return nil

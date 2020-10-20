@@ -8,7 +8,7 @@ Mysql:
   DBName: "doraemon"
   DBTns: "49.234.224.9:3306"
   DBUser: "root"
-  DBPasswd: "xing-shadow"
+  DBPasswd: "root"
   DBLoc: "Asia%2FShanghai"
   DBConnTTL: 5
 

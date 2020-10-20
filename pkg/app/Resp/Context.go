@@ -46,3 +46,7 @@ func (ctx *Context) WithData(data interface{}) RespOption {
 		resp.Data = data
 	}
 }
+
+func (ctx *Context) Bind(i interface{})  {
+
+}

@@ -4,7 +4,7 @@
 @File : main.go
 @Software: GoLand
 */
-package alter_gateway
+package main
 
 import (
 	"gopkg.in/alecthomas/kingpin.v2"
@@ -12,8 +12,9 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"xing-doraemon/interval/app"
 
-	"xing-doraemon/gobal"
+	"xing-doraemon/global"
 	"xing-doraemon/interval/service"
 )
 
@@ -24,12 +25,15 @@ func main() {
 	a.HelpFlag.Short('h')
 	a.Flag("conf", "config file path").Short('c').StringVar(&configPath)
 	if err := SetUp(); err != nil {
-		gobal.GetLogger().Panic("set up fail: ", err)
+		global.GetLogger().Panic("set up fail: ", err)
 	}
-	gobal.GetLogger().Info("set up success")
+	global.GetLogger().Info("set up success")
 
 	if err := service.Init(); err != nil {
-		gobal.GetLogger().Panic("service init fail: ", err)
+		global.GetLogger().Panic("service init fail: ", err)
+	}
+	if err := app.Init(); err != nil {
+		global.GetLogger().Panic("app init fail: ", err)
 	}
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGINT)
@@ -39,7 +43,7 @@ func main() {
 }
 
 func SetUp() error {
-	if err := gobal.InitAlterGatewayConfig(configPath); err != nil {
+	if err := global.InitAlterGatewayConfig(configPath); err != nil {
 		return err
 	}
 	return nil
