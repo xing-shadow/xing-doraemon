@@ -1,8 +1,12 @@
 package Resp
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+)
 
 type Context struct {
+	binding.Binding
 	*gin.Context
 }
 
@@ -10,7 +14,7 @@ type HandFunc func(ctx *Context)
 
 func Handle(handFunc HandFunc) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctxNew := &Context{ctx}
+		ctxNew := &Context{Context: ctx}
 		handFunc(ctxNew)
 	}
 }
@@ -47,6 +51,10 @@ func (ctx *Context) WithData(data interface{}) RespOption {
 	}
 }
 
-func (ctx *Context) Bind(i interface{})  {
+func (ctx *Context) WithBinder(binder binding.Binding) {
+	ctx.Binding = binder
+}
+
+func (ctx *Context) Bind(i interface{}) {
 
 }

@@ -34,7 +34,11 @@ func (ctx *Context) BindParam(i interface{}) error {
 		params = req.URL.Query()
 		return ctx.bindData(i, params, DefaultTag)
 	default:
-		return ctx.BindJSON(i)
+		if ctx.Binding == nil {
+			return ctx.BindJSON(i)
+		} else {
+			return ctx.BindWith(i, ctx.Binding)
+		}
 	}
 }
 

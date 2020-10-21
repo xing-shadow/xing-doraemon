@@ -3,10 +3,23 @@
 ### Example user template
 
 # IntelliJ project files
+# Mac OS X
+.DS_Store
+
+# IDE
 .idea
-*.iml
-out
-gen
+*.out
+
+# Binaries for programs and plugins
 *.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 *_linux
-*test.go
+
+# Test binary
+*.test
+
+# lib & package
+.glide/
