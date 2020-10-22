@@ -1,7 +1,7 @@
 /*
- * @Time : 2020/10/19 17:09
+ * @Time : 2020/10/22 14:49
  * @Author : wangyl
- * @File : RuleHandle.go
+ * @File : PlanHandle.go
  * @Software: GoLand
  */
 package Handler
@@ -9,17 +9,17 @@ package Handler
 import (
 	"net/http"
 	"xing-doraemon/interval/model/view"
-	"xing-doraemon/interval/service/RuleService"
+	"xing-doraemon/interval/service/PlanService"
 	"xing-doraemon/pkg/App/Resp"
 )
 
-// @Summary 获取单个rule
+// @Summary 获取单个Plan
 // @Produce  json
 // @Param id query string true "序号"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/ruleID [get]
-func GetRule(ctx *Resp.Context) {
-	var param view.GetRule
+// @Router /api/v1/planID [get]
+func GetPlan(ctx *Resp.Context) {
+	var param view.GetPlan
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
@@ -29,111 +29,110 @@ func GetRule(ctx *Resp.Context) {
 		ctx.ToResponse(Resp.MsgError, "invalid params", ctx.WithStatus(http.StatusOK))
 		return
 	}
-	data, err := RuleService.GetRule(param)
+	data, err := PlanService.GetPlan(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
 	return
 }
 
-// @Summary 获取rules列表，分页
+// @Summary 获取Plan列表，分页
 // @Produce  json
-// @Param page query string true "序号"
-// @Param page_size query string true "序号"
+// @Param page query string true "页序号"
+// @Param page_size query string true "页大小"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [get]
-func GetRulePagination(ctx *Resp.Context) {
-	var param view.GetRulesReq
-	err := ctx.BindParam(&param.PaginationRequest)
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	data, err := RuleService.GetPaginationRule(param)
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-	return
-}
-
-// @Summary 获取所有rules
-// @Produce  json
-// @Success 200 {object} Resp.Response
-// @Router /api/v1/rules [get]
-func GetAllRule(ctx *Resp.Context) {
-	data, err := RuleService.GetAllRule()
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-	return
-}
-
-// @Summary 创建rule
-// @Produce  json
-// @Param body body view.CreateRuleReq true "body"
-// @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [post]
-func CreateRule(ctx *Resp.Context) {
-	var param view.CreateRuleReq
+// @Router /api/v1/plan [get]
+func GetPlanPagination(ctx *Resp.Context) {
+	var param view.GetPlanList
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	err = RuleService.CreateRule(param)
+	data, err := PlanService.GetPlanPagination(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK))
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
 	return
 }
 
-// @Summary 修改rule
+// @Summary 获取所有Plan
 // @Produce  json
-// @Param body body view.ModifyRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [put]
-func ModifyRule(ctx *Resp.Context) {
-	var param view.ModifyRuleReq
+// @Router /api/v1/plans [get]
+func GetAllPlan(ctx *Resp.Context) {
+	data, err := PlanService.GetAllPlan()
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
+	return
+}
+
+// @Summary 创建plan
+// @Produce  json
+// @Param body body view.CreatePlanReq true "body"
+// @Success 200 {object} Resp.Response
+// @Router /api/v1/plan [post]
+func CreatePlan(ctx *Resp.Context) {
+	var param view.CreatePlanReq
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-
-	err = RuleService.ModifyRule(param)
+	err = PlanService.CreatePlan(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK))
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK))
 	return
 }
 
-// @Summary 删除rule
+// @Summary 修改plan
+// @Produce  json
+// @Param body body view.ModifyPlanReq true "body"
+// @Success 200 {object} Resp.Response
+// @Router /api/v1/plan [put]
+func ModifyPlan(ctx *Resp.Context) {
+	var param view.ModifyPlanReq
+	err := ctx.BindParam(&param)
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	err = PlanService.ModifyPlan(param)
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK))
+	return
+}
+
+// @Summary 删除plan
 // @Produce  json
 // @Param body body view.DeleteRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [delete]
-func DeleteRule(ctx *Resp.Context) {
+// @Router /api/v1/plan [delete]
+func DeletePlan(ctx *Resp.Context) {
 	var param view.DeleteRuleReq
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	err = RuleService.DeleteRule(param)
+	err = PlanService.DeletePlan(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK))
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK))
 	return
 }

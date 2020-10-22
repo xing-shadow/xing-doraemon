@@ -8,6 +8,9 @@ package service
 
 import (
 	"xing-doraemon/interval/Invoker"
+	"xing-doraemon/interval/service/PlanService"
+	"xing-doraemon/interval/service/PromService"
+	"xing-doraemon/interval/service/RuleService"
 )
 
 func Init() error {
@@ -17,5 +20,10 @@ func Init() error {
 	if err := Invoker.Init(); err != nil {
 		return err
 	}
+	RuleService.Init(RuleService.Option{DB: Invoker.MysqlInvoker})
+
+	PlanService.Init(PlanService.Option{DB: Invoker.MysqlInvoker})
+
+	PromService.Init(PromService.Option{DB: Invoker.MysqlInvoker})
 	return nil
 }

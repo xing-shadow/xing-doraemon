@@ -1,8 +1,8 @@
 package view
 
 type PaginationRequest struct {
-	Page     uint `form:"page" json:"page" bind:"required"`
-	PageSize uint `form:"page_size" json:"page_size"`
+	Page     uint `query:"page"`
+	PageSize uint `query:"page_size"`
 }
 
 type PaginationResp struct {

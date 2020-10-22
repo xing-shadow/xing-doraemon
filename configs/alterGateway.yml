@@ -6,9 +6,9 @@ App:
 Mysql:
   DBType : "mysql"
   DBName: "doraemon"
-  DBTns: "49.234.224.9:3306"
+  DBTns: "localhost:3306"
   DBUser: "root"
-  DBPasswd: "root"
+  DBPasswd: "123456"
   DBLoc: "Asia%2FShanghai"
   DBConnTTL: 5
 

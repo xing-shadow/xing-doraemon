@@ -1,0 +1,385 @@
+definitions:
+  Resp.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+  view.CreatePlanReq:
+    properties:
+      end_time:
+        type: string
+      expression:
+        type: string
+      period:
+        type: integer
+      start_time:
+        type: string
+    required:
+    - period
+    type: object
+  view.CreateProm:
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+    required:
+    - name
+    - url
+    type: object
+  view.CreateRuleReq:
+    properties:
+      description:
+        type: string
+      expr:
+        type: string
+      for:
+        type: string
+      op:
+        type: string
+      plan_id:
+        type: integer
+      prom:
+        type: integer
+      summary:
+        type: string
+      value:
+        type: string
+    type: object
+  view.DeleteProm:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
+  view.DeleteRuleReq:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
+  view.ModifyPlanReq:
+    properties:
+      end_time:
+        type: string
+      expression:
+        type: string
+      id:
+        type: integer
+      period:
+        type: integer
+      start_time:
+        type: string
+    required:
+    - id
+    type: object
+  view.ModifyProm:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      url:
+        type: string
+    required:
+    - id
+    type: object
+  view.ModifyRuleReq:
+    properties:
+      description:
+        type: string
+      expr:
+        type: string
+      for:
+        type: string
+      id:
+        type: integer
+      op:
+        type: string
+      summary:
+        type: string
+      value:
+        type: string
+    type: object
+info:
+  contact: {}
+  license: {}
+  title: prometheus Alert management center
+  version: "2.0"
+paths:
+  /api/v1/plan:
+    delete:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.DeleteRuleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 删除plan
+    get:
+      parameters:
+      - description: 页序号
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 页大小
+        in: query
+        name: page_size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取Plan列表，分页
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.CreatePlanReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 创建plan
+    put:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.ModifyPlanReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 修改plan
+  /api/v1/planID:
+    get:
+      parameters:
+      - description: 序号
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取单个Plan
+  /api/v1/plans:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取所有Plan
+  /api/v1/prom:
+    delete:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.DeleteProm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 删除prom
+    get:
+      parameters:
+      - description: 页序号
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 页大小
+        in: query
+        name: page_size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取proms, 分页
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.CreateProm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 创建prom
+    put:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.ModifyProm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 修改prom
+  /api/v1/proms:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取所有proms
+  /api/v1/rule:
+    delete:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.DeleteRuleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 删除rule
+    get:
+      parameters:
+      - description: 序号
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 序号
+        in: query
+        name: page_size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取rules列表，分页
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.CreateRuleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 创建rule
+    put:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.ModifyRuleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 修改rule
+  /api/v1/ruleID:
+    get:
+      parameters:
+      - description: 序号
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取单个rule
+  /api/v1/rules:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取所有rules
+swagger: "2.0"

@@ -7,14 +7,11 @@
 package Invoker
 
 import (
-	"context"
 	"fmt"
-	"strings"
-	"time"
-
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"strings"
 	"xing-doraemon/global"
 	mysqlDB "xing-doraemon/interval/model/db"
 )
@@ -33,10 +30,10 @@ func InitMysqlInvoker() (*gorm.DB, error) {
 		cfg.DBLoc)
 	db, err := gorm.Open(cfg.DBType, dsn)
 	if err != nil {
-		return nil, err
-	}
-	if err := ensureDatabase(db, dsn, cfg.DBName); err != nil {
-		return nil, err
+		fmt.Println(err)
+		if err := ensureDatabase(db, err, dsn, cfg.DBName); err != nil {
+			return nil, err
+		}
 	}
 	doraemonMysql = db
 	doraemonMysql.SingularTable(true)
@@ -46,36 +43,36 @@ func InitMysqlInvoker() (*gorm.DB, error) {
 	return doraemonMysql, nil
 }
 
-func ensureDatabase(db *gorm.DB, dsn string, dbName string) error {
+func ensureDatabase(db *gorm.DB, err error, dsn string, dbName string) error {
 	needInit := false
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
-	if err := db.DB().PingContext(ctx); err != nil {
-		switch e := err.(type) {
-		case *mysql.MySQLError:
-			// MySQL error unkonw database;
-			// refer https://dev.mysql.com/doc/refman/5.6/en/error-messages-server.html
-			const MysqlErrNum = 1049
-			if e.Number == MysqlErrNum {
-				needInit = true
-				dbForCreateDatabase, err := gorm.Open("mysql", GetTrimDBName(dsn))
-				if err != nil {
-					return err
-				}
-				defer dbForCreateDatabase.Close()
-				_, err = dbForCreateDatabase.DB().Exec(fmt.Sprintf("CREATE DATABASE %s CHARACTER SET utf8 COLLATE utf8_general_ci;", dbName))
-				if err != nil {
-					return err
-				}
-
-			} else {
+	switch e := err.(type) {
+	case *mysql.MySQLError:
+		// MySQL error unkonw database;
+		// refer https://dev.mysql.com/doc/refman/5.6/en/error-messages-server.html
+		const MysqlErrNum = 1049
+		if e.Number == MysqlErrNum {
+			needInit = true
+			dbForCreateDatabase, err := gorm.Open("mysql", GetTrimDBName(dsn))
+			if err != nil {
 				return err
 			}
-		default:
+			defer dbForCreateDatabase.Close()
+			_, err = dbForCreateDatabase.DB().Exec(fmt.Sprintf("CREATE DATABASE %s CHARACTER SET utf8 COLLATE utf8_general_ci;", dbName))
+			if err != nil {
+				return err
+			}
+		} else {
 			return err
 		}
+	default:
+		return err
 	}
 	// database created, maybe by DBA, but tables not created yet
 	if needInit {
+		db, err := gorm.Open("mysql", dsn)
+		if err != nil {
+			return err
+		}
 		models := []interface{}{
 			&mysqlDB.Alert{},
 			&mysqlDB.Rule{},

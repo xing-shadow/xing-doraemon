@@ -12,18 +12,22 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
-	"xing-doraemon/interval/app"
-
 	"xing-doraemon/global"
+	"xing-doraemon/interval/app"
 	"xing-doraemon/interval/service"
 )
 
 var configPath string
 
+// @title prometheus Alert management center
+// @version 2.0
 func main() {
 	a := kingpin.New(filepath.Base(os.Args[0]), "prometheus alerts manager")
 	a.HelpFlag.Short('h')
 	a.Flag("conf", "config file path").Short('c').StringVar(&configPath)
+	if _, err := a.Parse(os.Args[1:]); err != nil {
+		global.GetLogger().Panic("parse cmd line fail:", err)
+	}
 	if err := SetUp(); err != nil {
 		global.GetLogger().Panic("set up fail: ", err)
 	}

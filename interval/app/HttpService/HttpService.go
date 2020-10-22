@@ -11,11 +11,13 @@ import (
 	"net/http"
 	"time"
 	"xing-doraemon/interval/app/HttpService/Handler"
-	"xing-doraemon/pkg/app/Resp"
+	"xing-doraemon/pkg/App/Resp"
 
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
-
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+	_ "xing-doraemon/docs"
 	"xing-doraemon/global"
 )
 
@@ -35,46 +37,52 @@ func Init() error {
 	//	HttpOnly: true,
 	//})
 	//router.Use(sessions.Sessions("gosessionid", store))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := router.Group("/api/v1/")
 	/*
 		rules
 	*/
 	{
-		api.GET("/rules", Resp.Handle(Handler.GetRuleAll))
+		api.GET("/ruleID", Resp.Handle(Handler.GetRule))
+		api.GET("/rule", Resp.Handle(Handler.GetRulePagination))
+		api.GET("/rules", Resp.Handle(Handler.GetAllRule))
 		api.POST("/rule", Resp.Handle(Handler.CreateRule))
-		api.PUT("/rule/:ruleId", Resp.Handle(Handler.ModifyRule))
-		api.DELETE("/rule/:ruleId")
+		api.PUT("/rule", Resp.Handle(Handler.ModifyRule))
+		api.DELETE("/rule", Resp.Handle(Handler.DeleteRule))
 	}
 	/*
 		alerts
 	*/
 	{
-		api.GET("/alerts")
-		api.GET("/alerts/rules/:ruleId")
-		api.GET("/alerts/classify")
-		api.PUT("/alerts")
-		api.POST("/alerts")
+		/*	api.GET("/alerts")
+			api.GET("/alerts/rules/:ruleId")
+			api.GET("/alerts/classify")
+			api.PUT("/alerts")
+			api.POST("/alerts")*/
 	}
 	/*
 		plans
 	*/
 	{
-		api.GET("/plans")
-		api.POST("/plans")
-		api.GET("/plans/:planId/receivers")
-		api.POST("/plans/:planId/receivers")
-		api.PUT("/plans/:planId")
-		api.DELETE("/plans/:planId")
+		api.GET("/planID", Resp.Handle(Handler.GetPlan))
+		api.GET("/plan", Resp.Handle(Handler.GetPlanPagination))
+		api.GET("/plans", Resp.Handle(Handler.GetAllPlan))
+		api.POST("/plan", Resp.Handle(Handler.CreatePlan))
+		//TODO
+		//api.GET("/plan/:planId/rules")
+		api.PUT("/plan", Resp.Handle(Handler.ModifyPlan))
+		api.DELETE("/plan", Resp.Handle(Handler.DeletePlan))
 
 	}
 	/*
 		proms
 	*/
 	{
-		api.GET("/proms")
-		api.POST("/proms")
-		api.PUT("/proms/:id")
-		api.DELETE("/proms/:id")
+		api.GET("/prom", Resp.Handle(Handler.GetPromsPagination))
+		api.GET("/proms", Resp.Handle(Handler.GetAllProms))
+		api.POST("/prom", Resp.Handle(Handler.CreateProm))
+		api.PUT("/prom", Resp.Handle(Handler.ModifyProm))
+		api.DELETE("/prom", Resp.Handle(Handler.DeleteProm))
 	}
 	service := http.Server{
 		Addr:         fmt.Sprintf(":%d", global.GetAlterGatewayConfig().App.Httpport),

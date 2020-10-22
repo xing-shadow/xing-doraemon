@@ -12,7 +12,6 @@ type Plan struct {
 	gorm.Model
 	StartTime  string
 	EndTime    string
-	Start      int
 	Period     int
 	Expression string
 	User       string
