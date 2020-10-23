@@ -23,7 +23,7 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 		page = int(req.Page)
 	}
 	if req.PageSize == 0 {
-		pageSize = int(req.PageSize)
+		pageSize = 1000
 	} else {
 		pageSize = int(req.PageSize)
 	}

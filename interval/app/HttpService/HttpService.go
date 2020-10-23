@@ -8,12 +8,12 @@ package HttpService
 
 import (
 	"fmt"
+	"github.com/gin-gonic/contrib/cors"
 	"net/http"
 	"time"
 	"xing-doraemon/interval/app/HttpService/Handler"
 	"xing-doraemon/pkg/App/Resp"
 
-	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -23,12 +23,6 @@ import (
 
 func Init() error {
 	router := gin.Default()
-	router.Use(cors.New(cors.Config{
-		AllowedOrigins:   []string{"http://localhost", "http://127.0.0.1"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		ExposedHeaders:   []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
 	//store := sessions.NewCookieStore([]byte("xing-shadow12345"))
 	//store.Options(sessions.Options{
 	//	Path:     "./tmp",
@@ -38,6 +32,18 @@ func Init() error {
 	//})
 	//router.Use(sessions.Sessions("gosessionid", store))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		ExposedHeaders:   []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+	router.Use(func(ctx *gin.Context) {
+		ctx.Next()
+		for _, h := range ctx.Writer.Header() {
+			fmt.Println(h)
+		}
+	})
 	api := router.Group("/api/v1/")
 	/*
 		rules

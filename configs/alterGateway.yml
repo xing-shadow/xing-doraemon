@@ -14,3 +14,8 @@ Mysql:
 
 Send:
   WebHook: ''
+
+RuleEngine:
+  NotifyRetries: 3
+  EvaluationInterval: '15s'
+  ReloadInterval: '5m'

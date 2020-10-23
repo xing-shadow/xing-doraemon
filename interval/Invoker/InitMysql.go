@@ -29,9 +29,10 @@ func InitMysqlInvoker() (*gorm.DB, error) {
 		cfg.DBName,
 		cfg.DBLoc)
 	db, err := gorm.Open(cfg.DBType, dsn)
+	fmt.Println(dsn)
 	if err != nil {
 		fmt.Println(err)
-		if err := ensureDatabase(db, err, dsn, cfg.DBName); err != nil {
+		if err := ensureDatabase(err, dsn, cfg.DBName); err != nil {
 			return nil, err
 		}
 	}
@@ -43,7 +44,7 @@ func InitMysqlInvoker() (*gorm.DB, error) {
 	return doraemonMysql, nil
 }
 
-func ensureDatabase(db *gorm.DB, err error, dsn string, dbName string) error {
+func ensureDatabase(err error, dsn string, dbName string) error {
 	needInit := false
 	switch e := err.(type) {
 	case *mysql.MySQLError:

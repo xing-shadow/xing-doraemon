@@ -8,7 +8,7 @@ package view
 
 type PromList struct {
 	PaginationResp
-	PromList []PromItem
+	PromList []PromItem `json:"prom_list"`
 }
 
 type PromItem struct {
