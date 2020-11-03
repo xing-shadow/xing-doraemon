@@ -12,6 +12,7 @@ type PromList struct {
 }
 
 type PromItem struct {
+	ID   uint   `json:"id"`
 	Name string `json:"name"`
 	Url  string `json:"url"`
 }

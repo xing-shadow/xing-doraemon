@@ -9,17 +9,18 @@ package AlertService
 import (
 	"encoding/json"
 	"fmt"
-	"xing-doraemon/interval/model/view"
 )
 
 func HandleAlert(input []byte) error {
 	//TODO alert Handle
-	var alerts view.Alerts
+	var alerts map[string]interface{}
 	err := json.Unmarshal(input, &alerts)
 	if err != nil {
 		return err
 	} else {
-		fmt.Println(alerts)
+		for s, i := range alerts {
+			fmt.Println(s, i)
+		}
 		return nil
 	}
 	/*todayZero, _ := time.ParseInLocation("2006-01-02", "2019-01-01 15:22:22", time.Local)

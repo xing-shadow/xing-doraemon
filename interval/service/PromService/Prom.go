@@ -28,7 +28,19 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 		pageSize = int(req.PageSize)
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Offset(offset).Limit(pageSize).Find(&proms).Error
+	if req.Name != "" && req.Url != "" {
+		err = opt.DB.Where("name LIKE ? AND url LIKE ? ",
+			"%"+req.Name+"%",
+			"%"+req.Url+"%").Offset(offset).Limit(pageSize).Find(&proms).Error
+	} else if req.Name != "" && req.Url == "" {
+		err = opt.DB.Where("name LIKE ?",
+			"%"+req.Name+"%").Offset(offset).Limit(pageSize).Find(&proms).Error
+	} else if req.Name == "" && req.Url != "" {
+		err = opt.DB.Where("url LIKE ? ",
+			"%"+req.Url+"%").Offset(offset).Limit(pageSize).Find(&proms).Error
+	} else {
+		err = opt.DB.Find(&proms).Offset(offset).Limit(pageSize).Error
+	}
 	if err != nil {
 		return
 	}
@@ -40,27 +52,7 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 	resp.Total = count
 	for _, prom := range proms {
 		resp.PromList = append(resp.PromList, view.PromItem{
-			Name: prom.Name,
-			Url:  prom.Url,
-		})
-	}
-	return
-}
-
-func GetAllProms() (resp view.PromList, err error) {
-	var proms []db.Prom
-	var count int
-	err = opt.DB.Find(&proms).Error
-	if err != nil {
-		return
-	}
-	err = opt.DB.Model(&db.Prom{}).Count(&count).Error
-	if err != nil {
-		return
-	}
-	resp.Total = count
-	for _, prom := range proms {
-		resp.PromList = append(resp.PromList, view.PromItem{
+			ID:   prom.ID,
 			Name: prom.Name,
 			Url:  prom.Url,
 		})

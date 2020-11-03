@@ -8,11 +8,18 @@ package view
 
 type GetProms struct {
 	PaginationRequest
+	Name string `query:"name"`
+	Url  string `query:"url"`
 }
 
 type CreateProm struct {
 	Name string `json:"name" binding:"required"`
 	Url  string `json:"url" binding:"required"`
+}
+
+type SearchProm struct {
+	Name string `query:"name"`
+	Url  string `query:"url"`
 }
 
 type ModifyProm struct {

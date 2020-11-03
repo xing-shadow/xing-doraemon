@@ -280,22 +280,6 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/proms": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "获取所有proms",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Resp.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/rule": {
             "get": {
                 "produces": [

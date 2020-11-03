@@ -36,20 +36,6 @@ func GetPromsPagination(ctx *Resp.Context) {
 	return
 }
 
-// @Summary 获取所有proms
-// @Produce  json
-// @Success 200 {object} Resp.Response
-// @Router /api/v1/proms [get]
-func GetAllProms(ctx *Resp.Context) {
-	data, err := PromService.GetAllProms()
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-	return
-}
-
 // @Summary 创建prom
 // @Produce  json
 // @Param body body view.CreateProm true "body"

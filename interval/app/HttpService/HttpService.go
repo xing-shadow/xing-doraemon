@@ -85,7 +85,6 @@ func Init() error {
 	*/
 	{
 		api.GET("/prom", Resp.Handle(Handler.GetPromsPagination))
-		api.GET("/proms", Resp.Handle(Handler.GetAllProms))
 		api.POST("/prom", Resp.Handle(Handler.CreateProm))
 		api.PUT("/prom", Resp.Handle(Handler.ModifyProm))
 		api.DELETE("/prom", Resp.Handle(Handler.DeleteProm))

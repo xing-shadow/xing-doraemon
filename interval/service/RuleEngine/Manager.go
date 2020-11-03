@@ -55,7 +55,6 @@ func NewManager(ctx context.Context, logger log.Logger, prom Prom, cfg Config) (
 		TSDB:            localStorage,
 		ExternalURL:     &url.URL{},
 		Logger:          log.With(logger, "component", "rule manager"),
-		Registerer:      nil,
 		OutageTolerance: time.Hour,
 		ForGracePeriod:  10 * time.Minute,
 		ResendDelay:     time.Minute,
@@ -87,12 +86,12 @@ func (m *Manager) Stop() {
 func (m *Manager) Update(rules Rules) error {
 	m.Rules = rules
 	filePath := filepath.Join(os.TempDir(), fmt.Sprintf("rule.%d.yml", m.Prom.ID))
-
 	content, err := rules.Content()
 	if err != nil {
 		level.Error(m.logger).Log("msg", "get prom rule error", "error", err, "prom_id", m.Prom.ID)
 		return err
 	}
+	level.Info(m.logger).Log("path", filePath)
 	err = ioutil.WriteFile(filePath, content, 0644)
 	if err != nil {
 		level.Error(m.logger).Log("msg", "write file error", "error", err, "prom_id", m.Prom.ID)
