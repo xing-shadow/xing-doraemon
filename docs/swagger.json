@@ -262,6 +262,31 @@
                 }
             }
         },
+        "/api/v1/promId": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取单个prom",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "页序号",
+                        "name": "Id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/rule": {
             "get": {
                 "produces": [

@@ -36,6 +36,28 @@ func GetPromsPagination(ctx *Resp.Context) {
 	return
 }
 
+// @Summary 获取单个prom
+// @Produce  json
+// @Param Id query string true "页序号"
+// @Success 200 {object} Resp.Response
+// @Router /api/v1/promId [get]
+func GetProm(ctx *Resp.Context) {
+	var param view.GetProm
+	err := ctx.BindParam(&param)
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	data, err := PromService.GetProm(param)
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
+
+	return
+}
+
 // @Summary 创建prom
 // @Produce  json
 // @Param body body view.CreateProm true "body"

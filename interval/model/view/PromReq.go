@@ -12,14 +12,13 @@ type GetProms struct {
 	Url  string `query:"url"`
 }
 
+type GetProm struct {
+	ID uint8 `query:"Id"`
+}
+
 type CreateProm struct {
 	Name string `json:"name" binding:"required"`
 	Url  string `json:"url" binding:"required"`
-}
-
-type SearchProm struct {
-	Name string `query:"name"`
-	Url  string `query:"url"`
 }
 
 type ModifyProm struct {

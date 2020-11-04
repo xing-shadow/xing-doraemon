@@ -277,6 +277,22 @@ paths:
           schema:
             $ref: '#/definitions/Resp.Response'
       summary: 修改prom
+  /api/v1/promId:
+    get:
+      parameters:
+      - description: 页序号
+        in: query
+        name: Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取单个prom
   /api/v1/rule:
     delete:
       parameters:

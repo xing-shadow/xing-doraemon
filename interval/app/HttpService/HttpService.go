@@ -8,7 +8,6 @@ package HttpService
 
 import (
 	"fmt"
-	"github.com/gin-gonic/contrib/cors"
 	"net/http"
 	"time"
 	"xing-doraemon/interval/app/HttpService/Handler"
@@ -32,12 +31,7 @@ func Init() error {
 	//})
 	//router.Use(sessions.Sessions("gosessionid", store))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.Use(cors.New(cors.Config{
-		AllowAllOrigins:  true,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		ExposedHeaders:   []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
+	router.Use(Cors())
 	router.Use(func(ctx *gin.Context) {
 		ctx.Next()
 		for _, h := range ctx.Writer.Header() {
@@ -84,6 +78,7 @@ func Init() error {
 		proms
 	*/
 	{
+		api.GET("/promId", Resp.Handle(Handler.GetProm))
 		api.GET("/prom", Resp.Handle(Handler.GetPromsPagination))
 		api.POST("/prom", Resp.Handle(Handler.CreateProm))
 		api.PUT("/prom", Resp.Handle(Handler.ModifyProm))

@@ -39,7 +39,7 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 		err = opt.DB.Where("url LIKE ? ",
 			"%"+req.Url+"%").Offset(offset).Limit(pageSize).Find(&proms).Error
 	} else {
-		err = opt.DB.Find(&proms).Offset(offset).Limit(pageSize).Error
+		err = opt.DB.Offset(offset).Limit(pageSize).Find(&proms).Error
 	}
 	if err != nil {
 		return
@@ -57,6 +57,19 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 			Url:  prom.Url,
 		})
 	}
+	return
+}
+
+func GetProm(req view.GetProm) (resp view.PromItem, err error) {
+	var prom db.Prom
+
+	err = opt.DB.Where("id=?", req.ID).First(&prom).Error
+	if err != nil {
+		return
+	}
+	resp.Url = prom.Url
+	resp.Name = prom.Name
+	resp.ID = prom.ID
 	return
 }
 
