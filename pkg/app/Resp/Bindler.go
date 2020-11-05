@@ -35,7 +35,7 @@ func (ctx *Context) BindParam(i interface{}) error {
 		return ctx.bindData(i, params, DefaultTag)
 	default:
 		if ctx.Binding == nil {
-			return ctx.BindJSON(i)
+			return ctx.ShouldBindJSON(i)
 		} else {
 			return ctx.BindWith(i, ctx.Binding)
 		}

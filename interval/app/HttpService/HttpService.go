@@ -64,7 +64,7 @@ func Init() error {
 		plans
 	*/
 	{
-		api.GET("/planID", Resp.Handle(Handler.GetPlan))
+		api.GET("/planId", Resp.Handle(Handler.GetPlan))
 		api.GET("/plan", Resp.Handle(Handler.GetPlanPagination))
 		api.GET("/plans", Resp.Handle(Handler.GetAllPlan))
 		api.POST("/plan", Resp.Handle(Handler.CreatePlan))

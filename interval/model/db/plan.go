@@ -10,12 +10,12 @@ import "github.com/jinzhu/gorm"
 
 type Plan struct {
 	gorm.Model
-	StartTime  string
-	EndTime    string
-	Period     int
-	Expression string
-	User       string
-	Rules      []Rule `gorm:"foreignKey:PlanID"`
+	Name      string
+	StartTime string
+	EndTime   string
+	Period    int
+	User      string
+	Rules     []Rule `gorm:"foreignKey:PlanID"`
 }
 
 func (p Plan) TableName() string {

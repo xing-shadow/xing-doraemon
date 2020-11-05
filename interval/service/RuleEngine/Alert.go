@@ -1,7 +1,7 @@
 /*
  * @Time : 2020/10/23 16:09
  * @Author : wangyl
- * @File : Alert.go
+ * @File : AlertHandle.go
  * @Software: GoLand
  */
 package RuleEngine

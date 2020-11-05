@@ -11,22 +11,24 @@ type GetPlan struct {
 }
 
 type GetPlanList struct {
+	StartTime uint `query:"start_time"`
+	EndTime   uint `query:"end_time"`
 	PaginationRequest
 }
 
 type CreatePlanReq struct {
-	StartTime  string `json:"start_time"`
-	EndTime    string `json:"end_time"`
-	Period     int    `json:"period" binding:"required"`
-	Expression string `json:"expression"`
+	Name      string `json:"name"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	Period    int    `json:"period" binding:"required"`
 }
 
 type ModifyPlanReq struct {
-	Id         uint   `json:"id" binding:"required"`
-	StartTime  string `json:"start_time"`
-	EndTime    string `json:"end_time"`
-	Period     int    `json:"period"`
-	Expression string `json:"expression"`
+	Id        uint   `json:"id" binding:"required"`
+	Name      string `json:"name"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	Period    int    `json:"period"`
 }
 
 type DeletePlanReq struct {

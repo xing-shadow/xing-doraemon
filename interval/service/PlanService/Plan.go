@@ -20,11 +20,11 @@ func GetPlan(req view.GetPlan) (resp view.PlanItem, err error) {
 		return
 	}
 	resp = view.PlanItem{
-		Id:         plan.ID,
-		StartTime:  plan.StartTime,
-		EndTime:    plan.EndTime,
-		Period:     plan.Period,
-		Expression: plan.Expression,
+		Id:        plan.ID,
+		Name:      plan.Name,
+		StartTime: plan.StartTime,
+		EndTime:   plan.EndTime,
+		Period:    plan.Period,
 	}
 	return
 }
@@ -54,11 +54,11 @@ func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 	}
 	for _, plan := range plans {
 		resp.PlanList = append(resp.PlanList, view.PlanItem{
-			Id:         plan.ID,
-			StartTime:  plan.StartTime,
-			EndTime:    plan.EndTime,
-			Period:     plan.Period,
-			Expression: plan.Expression,
+			Id:        plan.ID,
+			Name:      plan.Name,
+			StartTime: plan.StartTime,
+			EndTime:   plan.EndTime,
+			Period:    plan.Period,
 		})
 	}
 	resp.CurrentPage = page
@@ -79,11 +79,10 @@ func GetAllPlan() (resp view.PlanList, err error) {
 	}
 	for _, plan := range plans {
 		resp.PlanList = append(resp.PlanList, view.PlanItem{
-			Id:         plan.ID,
-			StartTime:  plan.StartTime,
-			EndTime:    plan.EndTime,
-			Period:     plan.Period,
-			Expression: plan.Expression,
+			Id:        plan.ID,
+			StartTime: plan.StartTime,
+			EndTime:   plan.EndTime,
+			Period:    plan.Period,
 		})
 	}
 	resp.Total = count
@@ -93,7 +92,7 @@ func GetAllPlan() (resp view.PlanList, err error) {
 func CreatePlan(req view.CreatePlanReq) (err error) {
 	//TODO add User
 	var plan db.Plan
-	err = opt.DB.Where("start_time=? and end_time=? and period=? and expression=?", req.StartTime, req.EndTime, req.Period, req.Expression).First(&plan).Error
+	err = opt.DB.Where("start_time=? and end_time=? and period=?", req.StartTime, req.EndTime, req.Period).First(&plan).Error
 	if err != nil {
 		if !gorm.IsRecordNotFoundError(err) {
 			return
@@ -102,11 +101,11 @@ func CreatePlan(req view.CreatePlanReq) (err error) {
 		return errors.New("plan exist")
 	}
 	plan = db.Plan{
-		StartTime:  req.StartTime,
-		EndTime:    req.EndTime,
-		Period:     req.Period,
-		Expression: req.Expression,
-		User:       "no_user",
+		Name:      req.Name,
+		StartTime: req.StartTime,
+		EndTime:   req.EndTime,
+		Period:    req.Period,
+		User:      "no_user",
 	}
 	err = opt.DB.Create(&plan).Error
 	return
@@ -121,10 +120,9 @@ func ModifyPlan(req view.ModifyPlanReq) (err error) {
 		}
 	}
 	err = opt.DB.Model(&db.Plan{}).Where("id=?", req.Id).Updates(&db.Plan{
-		StartTime:  req.StartTime,
-		EndTime:    req.EndTime,
-		Period:     req.Period,
-		Expression: req.Expression,
+		StartTime: req.StartTime,
+		EndTime:   req.EndTime,
+		Period:    req.Period,
 	}).Error
 	return err
 }

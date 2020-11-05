@@ -13,18 +13,16 @@ import (
 
 type Alert struct {
 	gorm.Model
-	Labels          string
-	Value           float64
-	Count           int
-	Status          int8
-	Summary         string
-	Description     string
-	Hostname        string
-	ConfirmedBy     string
-	FiredAt         *time.Time
-	ConfirmedAt     *time.Time
-	ConfirmedBefore *time.Time
-	ResolvedAt      *time.Time
+	Labels      string
+	Value       float64
+	Count       int
+	Status      int8
+	Summary     string
+	Description string
+	Hostname    string
+	ConfirmedBy string
+	FiredAt     *time.Time
+	ConfirmedAt *time.Time
 
 	RuleID uint
 	Rule   Rule `gorm:"ForeignKey:RuleID"`
