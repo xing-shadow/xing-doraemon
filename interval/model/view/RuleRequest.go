@@ -15,8 +15,8 @@ type CreateRuleReq struct {
 	For         string `json:"for"`
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
-	PlanID      uint   `json:"plan_id" bind:"required"`
-	Prom        uint   `json:"prom" bind:"required"`
+	PlanName    string `json:"plan_name" bind:"required"`
+	PromName    string `json:"prom_name" bind:"required"`
 }
 
 type ModifyRuleReq struct {
@@ -27,6 +27,8 @@ type ModifyRuleReq struct {
 	For         string `json:"for"`
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
+	PlanName    string `json:"plan_name" bind:"required"`
+	PromName    string `json:"prom_name" bind:"required"`
 }
 
 type DeleteRuleReq struct {

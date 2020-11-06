@@ -10,7 +10,7 @@ import "github.com/jinzhu/gorm"
 
 type Prom struct {
 	gorm.Model
-	Name string `gorm:"size:1023" json:"name"`
+	Name string `gorm:"size:1023,unique" json:"name"`
 	Url  string `gorm:"size:1023" json:"url"`
 }
 

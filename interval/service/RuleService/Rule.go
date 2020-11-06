@@ -109,14 +109,14 @@ func CreateRule(req view.CreateRuleReq) (err error) {
 	var prom db.Prom
 	var plan db.Plan
 	var rule db.Rule
-	err = opt.DB.Where("id = ?", req.Prom).Find(&prom).Error
+	err = opt.DB.Where("name = ?", req.PromName).Find(&prom).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return fmt.Errorf("not found prom record")
 		}
 		return err
 	}
-	err = opt.DB.Where("id = ?", req.PlanID).Find(&plan).Error
+	err = opt.DB.Where("name = ?", req.PlanName).Find(&plan).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return fmt.Errorf("not found plan record")
@@ -147,7 +147,22 @@ func CreateRule(req view.CreateRuleReq) (err error) {
 
 func ModifyRule(req view.ModifyRuleReq) (err error) {
 	var rule db.Rule
-
+	var prom db.Prom
+	var plan db.Plan
+	err = opt.DB.Where("name = ?", req.PromName).Find(&prom).Error
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return fmt.Errorf("not found prom record")
+		}
+		return err
+	}
+	err = opt.DB.Where("name = ?", req.PlanName).Find(&plan).Error
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return fmt.Errorf("not found plan record")
+		}
+		return err
+	}
 	err = opt.DB.Where("id=?", req.ID).First(&rule).Error
 	if err != nil {
 		return
