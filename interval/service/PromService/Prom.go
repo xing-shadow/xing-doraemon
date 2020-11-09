@@ -73,6 +73,20 @@ func GetProm(req view.GetProm) (resp view.PromItem, err error) {
 	return
 }
 
+func GetPromAllName() (resp []string, err error) {
+	var results = []struct {
+		Name string `gorm:"column:name;"`
+	}{}
+	err = opt.DB.Table(db.Prom{}.TableName()).Select("name").Find(&results).Error
+	if err != nil {
+		return
+	}
+	for _, result := range results {
+		resp = append(resp, result.Name)
+	}
+	return
+}
+
 func CreateProms(req view.CreateProm) (err error) {
 	var prom db.Prom
 	err = opt.DB.Where("name=? and url=?", req.Name, req.Url).First(&prom).Error

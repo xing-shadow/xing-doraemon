@@ -65,6 +65,7 @@ func Init() error {
 	*/
 	{
 		api.GET("/planId", Resp.Handle(Handler.GetPlan))
+		api.GET("/plan/allName", Resp.Handle(Handler.GetPlanAllName))
 		api.GET("/plan", Resp.Handle(Handler.GetPlanPagination))
 		api.GET("/plans", Resp.Handle(Handler.GetAllPlan))
 		api.POST("/plan", Resp.Handle(Handler.CreatePlan))
@@ -79,6 +80,7 @@ func Init() error {
 	*/
 	{
 		api.GET("/promId", Resp.Handle(Handler.GetProm))
+		api.GET("/prom/allName", Resp.Handle(Handler.GetPromAllName))
 		api.GET("/prom", Resp.Handle(Handler.GetPromsPagination))
 		api.POST("/prom", Resp.Handle(Handler.CreateProm))
 		api.PUT("/prom", Resp.Handle(Handler.ModifyProm))

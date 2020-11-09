@@ -30,6 +30,20 @@ func GetPlan(req view.GetPlan) (resp view.PlanItem, err error) {
 	return
 }
 
+func GetPlanAllName() (resp []string, err error) {
+	var results = []struct {
+		Name string `gorm:"column:name;"`
+	}{}
+	err = opt.DB.Table(db.Plan{}.TableName()).Select("name").Find(&results).Error
+	if err != nil {
+		return
+	}
+	for _, result := range results {
+		resp = append(resp, result.Name)
+	}
+	return
+}
+
 func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 	var page, pageSize, offset int
 	var plans []db.Plan

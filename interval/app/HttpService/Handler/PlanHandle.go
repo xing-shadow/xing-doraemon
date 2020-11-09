@@ -38,6 +38,20 @@ func GetPlan(ctx *Resp.Context) {
 	return
 }
 
+// @Summary 获取所有prom名
+// @Produce  json
+// @Success 200 {object} Resp.Response
+// @Router /api/v1/plan/allNames [get]
+func GetPlanAllName(ctx *Resp.Context) {
+	data, err := PlanService.GetPlanAllName()
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
+	return
+}
+
 // @Summary 获取Plan列表，分页
 // @Produce  json
 // @Param page query string true "页序号"
