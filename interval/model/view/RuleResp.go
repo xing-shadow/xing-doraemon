@@ -10,10 +10,10 @@ type RuleItem struct {
 	Expr        string `json:"expr"`
 	Op          string `json:"op"`
 	Value       string `json:"value"`
-	For         string `json:"for"`
+	For         int    `json:"for"`
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
 
-	PlanID uint `json:"plan_id"`
-	PromID uint `json:"prom_id"`
+	PlanName string `json:"plan_name"`
+	PromName string `json:"prom_name"`
 }

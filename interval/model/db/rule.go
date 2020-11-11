@@ -15,7 +15,7 @@ type Rule struct {
 	Expr        string
 	Op          string
 	Value       string
-	For         string
+	For         int
 	Summary     string
 	Description string
 	Prom        Prom `gorm:"foreignKey:PromID;"`

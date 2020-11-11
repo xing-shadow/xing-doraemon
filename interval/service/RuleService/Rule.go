@@ -10,7 +10,7 @@ import (
 
 func GetRule(req view.GetRule) (resp view.RuleItem, err error) {
 	var rule db.Rule
-	err = opt.DB.Where("id=?", req.Id).First(&rule).Error
+	err = opt.DB.Preload("Plan").Preload("Prom").Where("id=?", req.Id).First(&rule).Error
 	if err != nil {
 		return
 	}
@@ -22,8 +22,8 @@ func GetRule(req view.GetRule) (resp view.RuleItem, err error) {
 		For:         rule.For,
 		Summary:     rule.Summary,
 		Description: rule.Description,
-		PlanID:      rule.PlanID,
-		PromID:      rule.PromID,
+		PlanName:    rule.Plan.Name,
+		PromName:    rule.Prom.Name,
 	}
 	return
 }
@@ -64,9 +64,6 @@ func GetPaginationRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 			For:         rule.For,
 			Summary:     rule.Summary,
 			Description: rule.Description,
-
-			PlanID: rule.PlanID,
-			PromID: rule.PromID,
 		}
 		resp.Rules = append(resp.Rules, rule)
 	}
@@ -96,9 +93,6 @@ func GetAllRule() (resp view.RuleList, err error) {
 			For:         rule.For,
 			Summary:     rule.Summary,
 			Description: rule.Description,
-
-			PlanID: rule.PlanID,
-			PromID: rule.PromID,
 		}
 		resp.Rules = append(resp.Rules, rule)
 	}
@@ -173,7 +167,7 @@ func ModifyRule(req view.ModifyRuleReq) (err error) {
 		Value:       req.Value,
 		For:         req.For,
 		Summary:     req.Summary,
-		Description: req.Summary,
+		Description: req.Description,
 	}).Error
 	return
 }

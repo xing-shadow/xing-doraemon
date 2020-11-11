@@ -43,7 +43,7 @@ func Init() error {
 		rules
 	*/
 	{
-		api.GET("/ruleID", Resp.Handle(Handler.GetRule))
+		api.GET("/ruleId", Resp.Handle(Handler.GetRule))
 		api.GET("/rule", Resp.Handle(Handler.GetRulePagination))
 		api.GET("/rules", Resp.Handle(Handler.GetAllRule))
 		api.POST("/rule", Resp.Handle(Handler.CreateRule))

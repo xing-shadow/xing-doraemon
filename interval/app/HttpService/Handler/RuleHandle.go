@@ -17,7 +17,7 @@ import (
 // @Produce  json
 // @Param id query string true "序号"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/ruleID [get]
+// @Router /api/v1/ruleId [get]
 func GetRule(ctx *Resp.Context) {
 	var param view.GetRule
 	err := ctx.BindParam(&param)
