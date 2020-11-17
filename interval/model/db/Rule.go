@@ -1,7 +1,7 @@
 /*
 @Time : 2020/8/25 10:39
 @Author : wangyl
-@File : rule.go
+@File : Rule.go
 @Software: GoLand
 */
 package db

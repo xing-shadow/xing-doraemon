@@ -7,6 +7,7 @@
 package RuleEngine
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"strconv"
 	"strings"
@@ -49,7 +50,7 @@ func (r Rules) Content() ([]byte, error) {
 		rules = append(rules, M{
 			"alert":  strconv.FormatInt(rule.ID, 10),
 			"expr":   strings.Join([]string{rule.Expr, rule.Op, rule.Value}, " "),
-			"for":    rule.For,
+			"for":    fmt.Sprintf("%ss", rule.For),
 			"labels": rule.Labels,
 			"annotations": M{
 				"rule_id":     strconv.FormatInt(rule.ID, 10),

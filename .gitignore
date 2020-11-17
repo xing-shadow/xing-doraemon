@@ -17,6 +17,7 @@
 *.so
 *.dylib
 *_linux
+assets/node_modules/
 
 # Test binary
 *.test

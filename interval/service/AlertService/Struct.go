@@ -6,6 +6,10 @@
  */
 package AlertService
 
+import (
+	"time"
+)
+
 /*
 [
     {
@@ -29,18 +33,15 @@ package AlertService
     }
 ]
 */
-
-type PromAlertItemList []PromAlertItem
-
 type PromAlertItem struct {
-	ActiveAt    string      `json:"active_at"`    //触发时间
-	FiredAt     string      `json:"fired_at"`     //第一次告警时间
-	State       int         `json:"state"`        //状态 0:正常 1:挂起 2:告警
-	LastSentAt  string      `json:"last_sent_at"` //上一次告警时间
-	Value       int         `json:"value"`        //上一次触法告警值
-	ValidUntil  string      `json:"valid_until"`  //有效期时间节点
-	Annotations Annotations `json:"annotations"`  //元数据
-	Labels      Labels      `json:"labels"`       //标签列表
+	ActiveAt    *time.Time        `json:"active_at"`    //触发时间
+	FiredAt     *time.Time        `json:"fired_at"`     //第一次告警时间
+	State       int8              `json:"state"`        //状态 0:正常 1:挂起 2:告警
+	LastSentAt  string            `json:"last_sent_at"` //上一次告警时间
+	Value       float64           `json:"value"`        //上一次触法告警值
+	ValidUntil  string            `json:"valid_until"`  //有效期时间节点
+	Annotations Annotations       `json:"annotations"`  //元数据
+	Labels      map[string]string `json:"labels"`       //标签列表
 }
 
 type Annotations struct {
@@ -49,5 +50,3 @@ type Annotations struct {
 	RuleId      string `json:"rule_id"`     //rule记录id
 	Summary     string `json:"summary"`     //简介
 }
-
-type Labels map[string]string //标签

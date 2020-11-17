@@ -21,6 +21,4 @@ func Init(option Option) {
 	reloader := NewReloader(opt.Cfg)
 
 	reloader.Start()
-
-	select {}
 }

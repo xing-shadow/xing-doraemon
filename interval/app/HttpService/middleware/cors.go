@@ -1,10 +1,10 @@
 /*
- * @Time : 2020/11/4 15:45
+ * @Time : 2020/11/16 10:43
  * @Author : wangyl
- * @File : middleware.go
+ * @File : cors.go
  * @Software: GoLand
  */
-package HttpService
+package middleware
 
 import (
 	"github.com/gin-gonic/gin"

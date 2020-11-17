@@ -14,6 +14,7 @@ import (
 	"strings"
 	"xing-doraemon/global"
 	mysqlDB "xing-doraemon/interval/model/db"
+	"xing-doraemon/pkg/Utils"
 )
 
 var (
@@ -29,13 +30,13 @@ func InitMysqlInvoker() (*gorm.DB, error) {
 		cfg.DBName,
 		cfg.DBLoc)
 	db, err := gorm.Open(cfg.DBType, dsn)
-	fmt.Println(dsn)
 	if err != nil {
 		fmt.Println(err)
 		if err := ensureDatabase(err, dsn, cfg.DBName); err != nil {
 			return nil, err
 		}
 	}
+	ensureTables(db)
 	doraemonMysql = db
 	doraemonMysql.SingularTable(true)
 	doraemonMysql.LogMode(true)
@@ -80,13 +81,56 @@ func ensureDatabase(err error, dsn string, dbName string) error {
 			&mysqlDB.Prom{},
 			&mysqlDB.User{},
 			&mysqlDB.Plan{},
+			&mysqlDB.CasbinPolicyGroup{},
+			&mysqlDB.CasbinPolicyAuth{},
 		}
+		db.Create(&mysqlDB.User{
+			Name:     "xing",
+			Password: Utils.Md5ToHex([]byte("123456")),
+		})
+		db.Create(&mysqlDB.CasbinPolicyGroup{
+			UserName:  "xing",
+			GroupName: "admin",
+		})
 		db.SingularTable(true)
 		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(models...)
 		global.GetLogger().Info("create tables ok")
 	}
 	global.GetLogger().Debugf("Initialize database connection: %s", dsn)
 	return nil
+}
+
+func ensureTables(db *gorm.DB) {
+	if ok := db.HasTable(&mysqlDB.Alert{}); !ok {
+		db.CreateTable(&mysqlDB.Alert{})
+	}
+	if ok := db.HasTable(&mysqlDB.Rule{}); !ok {
+		db.CreateTable(&mysqlDB.Rule{})
+	}
+	if ok := db.HasTable(&mysqlDB.Prom{}); !ok {
+		db.CreateTable(&mysqlDB.Prom{})
+	}
+	if ok := db.HasTable(&mysqlDB.User{}); !ok {
+		db.CreateTable(&mysqlDB.User{})
+		db.Create(&mysqlDB.User{
+			Name:     "xing",
+			Password: Utils.Md5ToHex([]byte("123456")),
+		})
+	}
+
+	if ok := db.HasTable(&mysqlDB.Plan{}); !ok {
+		db.CreateTable(&mysqlDB.Plan{})
+	}
+	if ok := db.HasTable(&mysqlDB.CasbinPolicyAuth{}); !ok {
+		db.CreateTable(&mysqlDB.CasbinPolicyAuth{})
+	}
+	if ok := db.HasTable(&mysqlDB.CasbinPolicyGroup{}); !ok {
+		db.CreateTable(&mysqlDB.CasbinPolicyGroup{})
+		db.Create(&mysqlDB.CasbinPolicyGroup{
+			UserName:  "xing",
+			GroupName: "admin",
+		})
+	}
 }
 
 func GetTrimDBName(dsn string) string {

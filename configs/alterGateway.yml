@@ -2,6 +2,7 @@ App:
   Httpport: 8080
   Runmode: "dev"
   Sessionon: true
+  Secret: 'xing-shadow'
 
 Mysql:
   DBType : "mysql"
@@ -12,10 +13,19 @@ Mysql:
   DBLoc: "Asia%2FShanghai"
   DBConnTTL: 5
 
+Casbin:
+  Enable: false,
+  Debug: true,
+  Model: '',
+  AutoLoad: true,
+  AutoLoadInterval: '1m',
+  ResourceFile: './configs/model.conf',
+
 Send:
-  WebHook: ''
+  WebHook: 'https://oapi.dingtalk.com/robot/send?access_token=af44402c610aed2f6a7b691e451acc400c617327614fadfd96badf21b4df8802'
 
 RuleEngine:
+  Enable: false
   NotifyRetries: 3
   EvaluationInterval: '15s'
   ReloadInterval: '5m'

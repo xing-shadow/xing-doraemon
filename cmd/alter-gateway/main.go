@@ -31,13 +31,13 @@ func main() {
 	if err := SetUp(); err != nil {
 		global.GetLogger().Panic("set up fail: ", err)
 	}
-	global.GetLogger().Info("set up success")
+	global.GetLogger().Info("set up succ	ess")
 
 	if err := service.Init(); err != nil {
 		global.GetLogger().Panic("service init fail: ", err)
 	}
 	if err := app.Init(); err != nil {
-		global.GetLogger().Panic("app init fail: ", err)
+		global.GetLogger().Panic("ap	p init fail: ", err)
 	}
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGINT)

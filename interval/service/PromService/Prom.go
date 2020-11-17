@@ -77,7 +77,7 @@ func GetPromAllName() (resp []string, err error) {
 	var results = []struct {
 		Name string `gorm:"column:name;"`
 	}{}
-	err = opt.DB.Table(db.Prom{}.TableName()).Select("name").Find(&results).Error
+	err = opt.DB.Table(db.Prom{}.TableName()).Select("name").Where("deleted_at is NULL").Find(&results).Error
 	if err != nil {
 		return
 	}

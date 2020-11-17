@@ -12,6 +12,7 @@ import (
 	"github.com/go-kit/kit/log/level"
 	"github.com/jinzhu/gorm"
 	"github.com/prometheus/common/promlog"
+	"strconv"
 	"time"
 	"xing-doraemon/interval/model/db"
 )
@@ -168,7 +169,7 @@ func (r *Reloader) getPromRules() ([]PromRules, error) {
 				Expr:        rule.Expr,
 				Op:          rule.Op,
 				Value:       rule.Value,
-				For:         rule.For,
+				For:         strconv.Itoa(rule.For),
 				Labels:      nil,
 				Summary:     rule.Summary,
 				Description: rule.Description,

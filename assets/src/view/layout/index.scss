@@ -1,0 +1,33 @@
+body {
+    background-color: $color;
+}
+
+.layout-warp{
+    height: 100vh;
+}
+
+.layout-header{
+    position: relative;
+    height: 75px;
+    background-color: #fff;
+    -webkit-box-shadow:0  3px 16px rgba(0,0,0,1);
+    > span {
+        margin-left: -40px;
+    }
+    > h1 {
+        float: right;
+        position: relative;
+        right: 50%;
+    }
+    .layout-header-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+}
+
+.layout-content {
+    border: 30px solid #f7f7f7;
+    background-color: #fff;
+    padding: 30px;
+}

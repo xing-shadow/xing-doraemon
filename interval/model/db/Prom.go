@@ -1,7 +1,7 @@
 /*
 @Time : 2020/8/25 10:38
 @Author : wangyl
-@File : prom.go
+@File : Prom.go
 @Software: GoLand
 */
 package db

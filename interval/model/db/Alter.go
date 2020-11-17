@@ -1,7 +1,7 @@
 /*
 @Time : 2020/8/25 10:37
 @Author : wangyl
-@File : alter.go
+@File : Alter.go
 @Software: GoLand
 */
 package db
@@ -19,13 +19,13 @@ type Alert struct {
 	Status      int8
 	Summary     string
 	Description string
-	Hostname    string
+	Instance    string
 	ConfirmedBy string
 	FiredAt     *time.Time
 	ConfirmedAt *time.Time
 
-	RuleID uint
-	Rule   Rule `gorm:"ForeignKey:RuleID"`
+	RuleId uint
+	Rule   Rule `gorm:"ForeignKey:RuleId"`
 }
 
 func (receiver Alert) TableName() string {

@@ -116,7 +116,7 @@ func HTTPNotifyFunc(logger log.Logger, retries int) rules.NotifyFunc {
 			return
 		}
 		for i := 0; i < retries; i++ {
-			err := AlertService.GetAlertHandle().HandleAlert(data)
+			err := AlertService.PushNotify(data)
 			if err != nil {
 				level.Error(logger).Log("msg", "notify error", "error", err, "retries", i)
 				time.Sleep(time.Second)

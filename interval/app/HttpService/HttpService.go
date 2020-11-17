@@ -9,9 +9,12 @@ package HttpService
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 	"xing-doraemon/interval/app/HttpService/Handler"
+	"xing-doraemon/interval/app/HttpService/middleware"
 	"xing-doraemon/pkg/App/Resp"
+	"xing-doraemon/pkg/Utils"
 
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -22,23 +25,36 @@ import (
 
 func Init() error {
 	router := gin.Default()
-	//store := sessions.NewCookieStore([]byte("xing-shadow12345"))
-	//store.Options(sessions.Options{
-	//	Path:     "./tmp",
-	//	MaxAge:   3600,
-	//	Secure:   false,
-	//	HttpOnly: true,
-	//})
-	//router.Use(sessions.Sessions("gosessionid", store))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.Use(Cors())
-	router.Use(func(ctx *gin.Context) {
-		ctx.Next()
-		for _, h := range ctx.Writer.Header() {
-			fmt.Println(h)
+	router.Use(middleware.Cors())
+	router.Use()
+	// static file
+	flag, err := Utils.IsFileExists("assets/build")
+	if err != nil || !flag {
+		panic("assets/dist not exist")
+	}
+	router.Static("/ant", "assets/build")
+	router.Static("/static", "assets/build/static")
+	router.StaticFile("/", "assets/build/index.html")
+	router.NoRoute(func(ctx *gin.Context) {
+		if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
+			ctx.JSON(http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		}
+		ctx.File("assets/build")
 	})
+	LoginMiddleware := middleware.LoginAuth("http://localhost:3000/api/login", middleware.RedirectTypeHttp).Func()
 	api := router.Group("/api/v1/")
+	api.POST("/user/login", Resp.Handle(Handler.UserLogin))
+	api.Use(LoginMiddleware)
+	/*
+		user
+	*/
+	{
+		api.POST("/user/list", Resp.Handle(Handler.UserList))
+		api.POST("/user/create", Resp.Handle(Handler.UserCreate))
+		api.POST("/user/update", Resp.Handle(Handler.UserUpdate))
+		api.POST("/user/delete", Resp.Handle(Handler.UserDelete))
+	}
 	/*
 		rules
 	*/
@@ -54,11 +70,9 @@ func Init() error {
 		alerts
 	*/
 	{
-		/*	api.GET("/alerts")
-			api.GET("/alerts/rules/:ruleId")
-			api.GET("/alerts/classify")
-			api.PUT("/alerts")
-			api.POST("/alerts")*/
+		api.GET("/alerts", Resp.Handle(Handler.GetAlerts))
+		api.POST("/alerts/confirm", Resp.Handle(Handler.ConfirmAlerts))
+
 	}
 	/*
 		plans
