@@ -25,6 +25,65 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/alerts": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取告警列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页大小",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/alerts/confirm": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "告警确认",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/view.ConfirmAlertsReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/plan": {
             "get": {
                 "produces": [
@@ -132,6 +191,22 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/plan/allNames": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取所有prom名",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/planID": {
             "get": {
                 "produces": [
@@ -147,22 +222,6 @@ var doc = `{
                         "required": true
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Resp.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/plans": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "获取所有Plan",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -280,6 +339,22 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/prom/allName": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取所有prom名",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/promId": {
             "get": {
                 "produces": [
@@ -365,7 +440,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "创建rule",
+                "summary": "用户登录",
                 "parameters": [
                     {
                         "description": "body",
@@ -373,7 +448,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/view.CreateRuleReq"
+                            "$ref": "#/definitions/view.LoginReq"
                         }
                     }
                 ],
@@ -412,7 +487,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/ruleID": {
+        "/api/v1/ruleId": {
             "get": {
                 "produces": [
                     "application/json"
@@ -437,12 +512,109 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/rules": {
+        "/api/v1/user/create": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "添加用户",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/view.UserCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/delete": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "修改用户",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/view.UserDeleteReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/list": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
-                "summary": "获取所有rules",
+                "summary": "用户列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "序号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "序号",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Resp.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/update": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "修改用户",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/view.UserUpdateReq"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -469,6 +641,17 @@ var doc = `{
                 }
             }
         },
+        "view.ConfirmAlertsReq": {
+            "type": "object",
+            "properties": {
+                "alert_list": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "view.CreatePlanReq": {
             "type": "object",
             "required": [
@@ -479,6 +662,9 @@ var doc = `{
                     "type": "string"
                 },
                 "expression": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "period": {
@@ -514,16 +700,17 @@ var doc = `{
                     "type": "string"
                 },
                 "for": {
-                    "type": "string"
+                    "description": "持续时间，单位秒",
+                    "type": "integer"
                 },
                 "op": {
                     "type": "string"
                 },
-                "plan_id": {
-                    "type": "integer"
+                "plan_name": {
+                    "type": "string"
                 },
-                "prom": {
-                    "type": "integer"
+                "prom_name": {
+                    "type": "string"
                 },
                 "summary": {
                     "type": "string"
@@ -555,6 +742,17 @@ var doc = `{
                 }
             }
         },
+        "view.LoginReq": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "view.ModifyPlanReq": {
             "type": "object",
             "required": [
@@ -569,6 +767,9 @@ var doc = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "period": {
                     "type": "integer"
@@ -605,7 +806,7 @@ var doc = `{
                     "type": "string"
                 },
                 "for": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
@@ -613,10 +814,49 @@ var doc = `{
                 "op": {
                     "type": "string"
                 },
+                "plan_name": {
+                    "type": "string"
+                },
+                "prom_name": {
+                    "type": "string"
+                },
                 "summary": {
                     "type": "string"
                 },
                 "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "view.UserCreateReq": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "view.UserDeleteReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "view.UserUpdateReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "user_name": {
                     "type": "string"
                 }
             }

@@ -15,13 +15,13 @@ var opt Option
 
 type Option struct {
 	*gorm.DB
-	config setting.Casbin
+	Config setting.Casbin
 }
 
 func Init(option Option) error {
 	opt = option
 	casbinAdapter := &CasbinAdapter{}
-	err := InitCasbin(opt.config, casbinAdapter)
+	err := InitCasbin(opt.Config, casbinAdapter)
 	if err != nil {
 		return err
 	}

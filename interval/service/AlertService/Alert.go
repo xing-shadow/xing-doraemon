@@ -27,7 +27,9 @@ func GetAlertList(req view.GetAlertsReq) (resp view.GetAlertResp, err error) {
 		pageSize = req.PageSize
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Where("status=? and confirmed_at is null", 2).Offset(offset).Limit(pageSize).Find(&alerts).Error
+	err = opt.DB.Where("status=? and confirmed_at is null", 2).
+		Or("status=? and confirmed_at is not null and ? > confirmed_at", 2, time.Now().Add(-2*time.Hour)).
+		Offset(offset).Limit(pageSize).Find(&alerts).Error
 	if err != nil {
 		return view.GetAlertResp{}, err
 	}

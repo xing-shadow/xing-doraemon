@@ -81,6 +81,7 @@ class AlertList extends Component {
                         }) 
                     }
                 }else{
+                    message.destroy();
                     message.error(res.msg)
                 }
             })
@@ -114,9 +115,11 @@ class AlertList extends Component {
         },()=> {
             ConfirmAlert(req).then(res => {
                 if (res.code === 0) {
+                    message.destroy();
                     message.success("确认告警成功");
                     this.getData();
                 }else{
+                    message.destroy();
                     message.error(res.msg);
                 }
                 this.setState({

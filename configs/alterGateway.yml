@@ -14,12 +14,11 @@ Mysql:
   DBConnTTL: 5
 
 Casbin:
-  Enable: false,
-  Debug: true,
-  Model: '',
-  AutoLoad: true,
-  AutoLoadInterval: '1m',
-  ResourceFile: './configs/model.conf',
+  Enable: false
+  Debug: false
+  Model: './configs/model.conf'
+  AutoLoad: true
+  AutoLoadInterval: '1m'
 
 Send:
   WebHook: 'https://oapi.dingtalk.com/robot/send?access_token=af44402c610aed2f6a7b691e451acc400c617327614fadfd96badf21b4df8802'

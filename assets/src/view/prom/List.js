@@ -74,11 +74,14 @@ class PromList extends Component {
                     }else{
                         this.setState({
                             PromList: [],
-                            })
+                        })
                     }
                     this.setState({
                         total: res.data.total,
                     })
+                }else{
+                    message.destroy();
+                    message.error(res.msg);
                 }
             })
             this.setState({

@@ -70,35 +70,6 @@ func GetPaginationRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 	return
 }
 
-func GetAllRule() (resp view.RuleList, err error) {
-	var rules []db.Rule
-	var count int
-	err = opt.DB.Find(&rules).Error
-	if err != nil {
-		global.GetLogger().Error("get rules from mysql fail:", err)
-		return
-	}
-	err = opt.DB.Model(&db.Rule{}).Count(&count).Error
-	if err != nil {
-		global.GetLogger().Error("get rules counts from mysql fail:", err)
-		return
-	}
-	resp.Total = count
-	for _, rule := range rules {
-		var rule = view.RuleItem{
-			Id:          rule.ID,
-			Expr:        rule.Expr,
-			Op:          rule.Op,
-			Value:       rule.Value,
-			For:         rule.For,
-			Summary:     rule.Summary,
-			Description: rule.Description,
-		}
-		resp.Rules = append(resp.Rules, rule)
-	}
-	return
-}
-
 func CreateRule(req view.CreateRuleReq) (err error) {
 	var prom db.Prom
 	var plan db.Plan

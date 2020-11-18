@@ -13,6 +13,7 @@ import (
 	"time"
 	"xing-doraemon/interval/app/HttpService/Handler"
 	"xing-doraemon/interval/app/HttpService/middleware"
+	"xing-doraemon/interval/service/CasbinService"
 	"xing-doraemon/pkg/App/Resp"
 	"xing-doraemon/pkg/Utils"
 
@@ -42,10 +43,25 @@ func Init() error {
 		}
 		ctx.File("assets/build")
 	})
-	LoginMiddleware := middleware.LoginAuth("http://localhost:3000/api/login", middleware.RedirectTypeHttp).Func()
+	LoginMiddleware := middleware.LoginAuth("/ant/login", middleware.RedirectTypeJson).Func()
 	api := router.Group("/api/v1/")
+
+	/*
+		判断用户是否登录，并设置信息
+	*/
 	api.POST("/user/login", Resp.Handle(Handler.UserLogin))
 	api.Use(LoginMiddleware)
+	/*
+		接口权限控制
+	*/
+	if global.GetAlterGatewayConfig().Casbin.Enable {
+		api.Use(middleware.CasbinMiddleware(middleware.CasbinConfig{
+			Enforcer: CasbinService.Casbin.SyncedEnforcer,
+			Skipper: middleware.AllowPathPrefixSkipper([]string{
+				"/api/v1/user/login",
+			}...),
+		}))
+	}
 	/*
 		user
 	*/
@@ -61,7 +77,6 @@ func Init() error {
 	{
 		api.GET("/ruleId", Resp.Handle(Handler.GetRule))
 		api.GET("/rule", Resp.Handle(Handler.GetRulePagination))
-		api.GET("/rules", Resp.Handle(Handler.GetAllRule))
 		api.POST("/rule", Resp.Handle(Handler.CreateRule))
 		api.PUT("/rule", Resp.Handle(Handler.ModifyRule))
 		api.DELETE("/rule", Resp.Handle(Handler.DeleteRule))
@@ -81,7 +96,6 @@ func Init() error {
 		api.GET("/planId", Resp.Handle(Handler.GetPlan))
 		api.GET("/plan/allName", Resp.Handle(Handler.GetPlanAllName))
 		api.GET("/plan", Resp.Handle(Handler.GetPlanPagination))
-		api.GET("/plans", Resp.Handle(Handler.GetAllPlan))
 		api.POST("/plan", Resp.Handle(Handler.CreatePlan))
 		//TODO
 		//api.GET("/plan/:planId/rules")

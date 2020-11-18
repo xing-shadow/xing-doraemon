@@ -87,7 +87,6 @@ class PlanList extends Component {
                 message.success("删除成功");
                 this.getData();
             }else{
-                console.log(res);
                 message.destroy();
                 message.success("删除失败");
             }
@@ -118,6 +117,9 @@ class PlanList extends Component {
                     this.setState({
                         total: res.data.total,
                     })
+                }else{
+                    message.destroy();
+                    message.error(res.msg);
                 }
             })
             this.setState({

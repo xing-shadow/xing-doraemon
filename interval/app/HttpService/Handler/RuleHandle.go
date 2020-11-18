@@ -60,20 +60,6 @@ func GetRulePagination(ctx *Resp.Context) {
 	return
 }
 
-// @Summary 获取所有rules
-// @Produce  json
-// @Success 200 {object} Resp.Response
-// @Router /api/v1/rules [get]
-func GetAllRule(ctx *Resp.Context) {
-	data, err := RuleService.GetAllRule()
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-	return
-}
-
 // @Summary 创建rule
 // @Produce  json
 // @Param body body view.CreateRuleReq true "body"

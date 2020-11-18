@@ -74,20 +74,6 @@ func GetPlanPagination(ctx *Resp.Context) {
 	return
 }
 
-// @Summary 获取所有Plan
-// @Produce  json
-// @Success 200 {object} Resp.Response
-// @Router /api/v1/plans [get]
-func GetAllPlan(ctx *Resp.Context) {
-	data, err := PlanService.GetAllPlan()
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-	return
-}
-
 // @Summary 创建plan
 // @Produce  json
 // @Param body body view.CreatePlanReq true "body"

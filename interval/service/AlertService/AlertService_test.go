@@ -11,6 +11,9 @@ import (
 	"github.com/panjf2000/ants/v2"
 	"testing"
 	"time"
+	"xing-doraemon/global"
+	"xing-doraemon/interval/Invoker"
+	"xing-doraemon/interval/model/db"
 )
 
 func TestA(t *testing.T) {
@@ -32,4 +35,27 @@ func TestA(t *testing.T) {
 		time.Sleep(time.Second)
 	}
 	select {}
+}
+
+func TestQueryAlert(t *testing.T) {
+	global.GetAlterGatewayConfig().Mysql.DBType = "mysql"
+	global.GetAlterGatewayConfig().Mysql.DBUser = "root"
+	global.GetAlterGatewayConfig().Mysql.DBPasswd = "123456"
+	global.GetAlterGatewayConfig().Mysql.DBTns = "localhost:3306"
+	global.GetAlterGatewayConfig().Mysql.DBName = "doraemon" //doraemon
+	global.GetAlterGatewayConfig().Mysql.DBLoc = "Asia%2FShanghai"
+	if err := Invoker.Init(); err != nil {
+		t.Fatal(err)
+	}
+	opt.DB = Invoker.MysqlInvoker
+	var alerts []db.Alert
+	err := opt.DB.Where("status=? and confirmed_at is not null and ? > confirmed_at ", 2, time.Now()).Find(&alerts).Error
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(alerts)
+}
+
+func TestB(t *testing.T) {
+	fmt.Println(time.Now().Add(-2 * time.Hour).Format(time.RFC3339))
 }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {GetToken} from '@/utils/Token';
+import {GetToken,DeleteToken} from '@/utils/Token';
 const httpClient = axios.create({
     baseURL:window.location.origin,
 });
@@ -17,8 +17,11 @@ httpClient.interceptors.request.use(
 
 httpClient.interceptors.response.use(
     function(resp) {
+        if (resp.status === 302) {
+            DeleteToken();
+        }
         if (resp.data) {
-            return resp.data;
+            return resp.data
         }else{
             Promise.reject("请求失败")
         }

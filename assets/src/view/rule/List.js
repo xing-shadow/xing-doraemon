@@ -112,6 +112,9 @@ class RuleList extends Component {
                     this.setState({
                         total:res.data.total,
                     })
+                }else{
+                    message.destroy();
+                    message.error(res.msg);
                 }
             })
             this.setState({
@@ -143,6 +146,7 @@ class RuleList extends Component {
                     this.setState({
                         visible:false,
                     })
+                    message.destroy();
                     message.error("请求记录失败");
                 }
             })
@@ -163,7 +167,7 @@ class RuleList extends Component {
             }else{
                 console.log(res);
                 message.destroy();
-                message.success(res.msg);
+                message.error(res.msg);
             }
         })
     }
@@ -175,7 +179,6 @@ class RuleList extends Component {
                 })
             }else{
                 message.error(res.msg);
-                console.log(res);
             }
         })
     }
@@ -187,7 +190,6 @@ class RuleList extends Component {
                 })
             }else{
                 message.error(res.msg);
-                console.log(res);
             }
         })
     }
@@ -242,6 +244,7 @@ class RuleList extends Component {
         }
         EditRule(req).then(res => {
             if (res.code === 0) {
+                message.destroy();
                 message.success("修改成功")
                 this.setState({
                     visible:false,
@@ -249,8 +252,8 @@ class RuleList extends Component {
                 this.refs.form.resetFields();
                 this.GetRuleLsit();
             }else{
-                console.log(res);
-                message.success(res.msg); 
+                message.destroy();
+                message.error(res.msg); 
             }
         })
     }

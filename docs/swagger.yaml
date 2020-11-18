@@ -8,11 +8,20 @@ definitions:
       msg:
         type: string
     type: object
+  view.ConfirmAlertsReq:
+    properties:
+      alert_list:
+        items:
+          type: integer
+        type: array
+    type: object
   view.CreatePlanReq:
     properties:
       end_time:
         type: string
       expression:
+        type: string
+      name:
         type: string
       period:
         type: integer
@@ -38,13 +47,14 @@ definitions:
       expr:
         type: string
       for:
-        type: string
+        description: 持续时间，单位秒
+        type: integer
       op:
         type: string
-      plan_id:
-        type: integer
-      prom:
-        type: integer
+      plan_name:
+        type: string
+      prom_name:
+        type: string
       summary:
         type: string
       value:
@@ -64,6 +74,13 @@ definitions:
     required:
     - id
     type: object
+  view.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   view.ModifyPlanReq:
     properties:
       end_time:
@@ -72,6 +89,8 @@ definitions:
         type: string
       id:
         type: integer
+      name:
+        type: string
       period:
         type: integer
       start_time:
@@ -97,14 +116,39 @@ definitions:
       expr:
         type: string
       for:
-        type: string
+        type: integer
       id:
         type: integer
       op:
         type: string
+      plan_name:
+        type: string
+      prom_name:
+        type: string
       summary:
         type: string
       value:
+        type: string
+    type: object
+  view.UserCreateReq:
+    properties:
+      password:
+        type: string
+      user_name:
+        type: string
+    type: object
+  view.UserDeleteReq:
+    properties:
+      id:
+        type: integer
+    type: object
+  view.UserUpdateReq:
+    properties:
+      id:
+        type: integer
+      password:
+        type: string
+      user_name:
         type: string
     type: object
 info:
@@ -113,6 +157,44 @@ info:
   title: prometheus Alert management center
   version: "2.0"
 paths:
+  /api/v1/alerts:
+    get:
+      parameters:
+      - description: 页号
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 页大小
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取告警列表
+  /api/v1/alerts/confirm:
+    get:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.ConfirmAlertsReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 告警确认
   /api/v1/plan:
     delete:
       parameters:
@@ -182,6 +264,16 @@ paths:
           schema:
             $ref: '#/definitions/Resp.Response'
       summary: 修改plan
+  /api/v1/plan/allNames:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取所有prom名
   /api/v1/planID:
     get:
       parameters:
@@ -198,16 +290,6 @@ paths:
           schema:
             $ref: '#/definitions/Resp.Response'
       summary: 获取单个Plan
-  /api/v1/plans:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Resp.Response'
-      summary: 获取所有Plan
   /api/v1/prom:
     delete:
       parameters:
@@ -277,6 +359,16 @@ paths:
           schema:
             $ref: '#/definitions/Resp.Response'
       summary: 修改prom
+  /api/v1/prom/allName:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 获取所有prom名
   /api/v1/promId:
     get:
       parameters:
@@ -337,7 +429,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/view.CreateRuleReq'
+          $ref: '#/definitions/view.LoginReq'
       produces:
       - application/json
       responses:
@@ -345,7 +437,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Resp.Response'
-      summary: 创建rule
+      summary: 用户登录
     put:
       parameters:
       - description: body
@@ -362,7 +454,7 @@ paths:
           schema:
             $ref: '#/definitions/Resp.Response'
       summary: 修改rule
-  /api/v1/ruleID:
+  /api/v1/ruleId:
     get:
       parameters:
       - description: 序号
@@ -378,8 +470,15 @@ paths:
           schema:
             $ref: '#/definitions/Resp.Response'
       summary: 获取单个rule
-  /api/v1/rules:
-    get:
+  /api/v1/user/create:
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.UserCreateReq'
       produces:
       - application/json
       responses:
@@ -387,5 +486,60 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Resp.Response'
-      summary: 获取所有rules
+      summary: 添加用户
+  /api/v1/user/delete:
+    delete:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.UserDeleteReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 修改用户
+  /api/v1/user/list:
+    get:
+      parameters:
+      - description: 序号
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 序号
+        in: query
+        name: page_size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 用户列表
+  /api/v1/user/update:
+    put:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/view.UserUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resp.Response'
+      summary: 修改用户
 swagger: "2.0"

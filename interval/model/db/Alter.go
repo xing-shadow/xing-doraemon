@@ -22,6 +22,7 @@ type Alert struct {
 	Instance    string
 	ConfirmedBy string
 	FiredAt     *time.Time
+	LastAt      *time.Time
 	ConfirmedAt *time.Time
 
 	RuleId uint

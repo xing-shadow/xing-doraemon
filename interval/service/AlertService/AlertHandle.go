@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	jsoniter "github.com/json-iterator/go"
+	"time"
 	"xing-doraemon/global"
 	"xing-doraemon/interval/model/db"
 	"xing-doraemon/interval/service/DingTalkService"
@@ -105,9 +106,17 @@ func HandleOneAlert(oneAlert PromAlertItem) (labels string, send bool, err error
 	if alert.ConfirmedBy == "" {
 		send = true
 	}
+	if alert.ConfirmedAt != nil {
+		if time.Now().Sub(*alert.ConfirmedAt) > 2*time.Hour {
+			send = true
+		}
+	}
 	if alert.ID > 0 {
 		count := alert.Count + 1
-		err := opt.DB.Model(&db.Alert{}).Where("id=?", alert.ID).Update("count", count).Error
+		err := opt.DB.Model(&db.Alert{}).Where("id=?", alert.ID).Updates(map[string]interface{}{
+			"count":   count,
+			"last_at": alert.LastAt,
+		}).Error
 		if err != nil {
 			logger.Error("HandleOneAlert update count db.Alert fail:", err)
 		}
@@ -121,6 +130,7 @@ func HandleOneAlert(oneAlert PromAlertItem) (labels string, send bool, err error
 			Description: oneAlert.Annotations.Description,
 			Instance:    oneAlert.Labels["instance"],
 			FiredAt:     oneAlert.FiredAt,
+			LastAt:      oneAlert.LastSentAt,
 			RuleId:      uint(Utils.MustToInt(oneAlert.Annotations.RuleId)),
 		}
 		err = opt.DB.Create(&alert).Error

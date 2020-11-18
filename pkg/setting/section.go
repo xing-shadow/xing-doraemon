@@ -49,6 +49,5 @@ type Casbin struct {
 	Model            string
 	AutoLoad         bool
 	AutoLoadInterval string
-	ResourceFile     string
 	Debug            bool
 }

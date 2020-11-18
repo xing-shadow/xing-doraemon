@@ -28,6 +28,7 @@ func (a Auth) Func() gin.HandlerFunc {
 		if err := a.Authenticator(ctx); err != nil {
 			a.Unauthorized(ctx)
 			ctx.Abort()
+			return
 		}
 	}
 }
@@ -73,9 +74,9 @@ func LoginAuth(loginURL string, redirectType RedirectType) *Auth {
 			if redirectType == RedirectTypeHttp {
 				ctx.Redirect(http.StatusFound, loginURL)
 			} else {
-				ctx.JSON(302, gin.H{
+				ctx.JSON(http.StatusOK, gin.H{
 					"code": 302,
-					"msg":  fmt.Sprintf("%s?%s=%s", loginURL, RedirectParam, ctx.Request.RequestURI),
+					"msg":  fmt.Sprintf("%s", loginURL),
 					"data": "",
 				})
 			}

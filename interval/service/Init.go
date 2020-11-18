@@ -10,6 +10,7 @@ import (
 	"xing-doraemon/global"
 	"xing-doraemon/interval/Invoker"
 	"xing-doraemon/interval/service/AlertService"
+	"xing-doraemon/interval/service/CasbinService"
 	"xing-doraemon/interval/service/DingTalkService"
 	"xing-doraemon/interval/service/PlanService"
 	"xing-doraemon/interval/service/PromService"
@@ -53,5 +54,13 @@ func Init() error {
 		})
 	}
 
+	if global.GetAlterGatewayConfig().Casbin.Enable {
+		if err := CasbinService.Init(CasbinService.Option{
+			DB:     Invoker.MysqlInvoker,
+			Config: global.GetAlterGatewayConfig().Casbin,
+		}); err != nil {
+			return err
+		}
+	}
 	return nil
 }

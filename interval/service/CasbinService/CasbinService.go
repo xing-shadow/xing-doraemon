@@ -30,10 +30,6 @@ func InitCasbin(conf setting.Casbin, adapter persist.Adapter) (err error) {
 		SyncedEnforcer: nil,
 		enabled:        true,
 	}
-	if conf.ResourceFile == "" {
-		global.GetLogger().Panic("invalid ResourceFile if ''")
-		return
-	}
 	if !conf.Enable {
 		return
 	}
