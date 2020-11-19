@@ -7,6 +7,7 @@
 package Resp
 
 import (
+	"crypto/md5"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -60,4 +61,10 @@ func ParseQueryParam(ctx *Context) {
 		})
 	}
 	ctx.JSON(http.StatusOK, req)
+}
+
+func TestA(t *testing.T) {
+	m := md5.New()
+	m.Write([]byte("123456"))
+	fmt.Println(string(m.Sum(nil)))
 }

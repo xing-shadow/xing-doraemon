@@ -19,10 +19,10 @@ import (
 
 func TestQuery(t *testing.T) {
 	global.GetAlterGatewayConfig().Mysql.DBType = "mysql"
-	global.GetAlterGatewayConfig().Mysql.DBUser = "xing"
-	global.GetAlterGatewayConfig().Mysql.DBPasswd = "123456"
+	global.GetAlterGatewayConfig().Mysql.DBUser = "root"
+	global.GetAlterGatewayConfig().Mysql.DBPasswd = "1"
 	global.GetAlterGatewayConfig().Mysql.DBTns = "192.168.0.71:3306"
-	global.GetAlterGatewayConfig().Mysql.DBName = "juno" //doraemon
+	global.GetAlterGatewayConfig().Mysql.DBName = "doraemon" //doraemon
 	global.GetAlterGatewayConfig().Mysql.DBLoc = "Asia%2FShanghai"
 	if err := Init(); err != nil {
 		t.Fatal(err)

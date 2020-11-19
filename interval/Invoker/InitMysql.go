@@ -84,6 +84,8 @@ func ensureDatabase(err error, dsn string, dbName string) error {
 			&mysqlDB.CasbinPolicyGroup{},
 			&mysqlDB.CasbinPolicyAuth{},
 		}
+		db.SingularTable(true)
+		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(models...)
 		db.Create(&mysqlDB.User{
 			Name:     "xing",
 			Password: Utils.Md5ToHex([]byte("123456")),
@@ -92,8 +94,6 @@ func ensureDatabase(err error, dsn string, dbName string) error {
 			UserName:  "xing",
 			GroupName: "admin",
 		})
-		db.SingularTable(true)
-		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(models...)
 		global.GetLogger().Info("create tables ok")
 	}
 	global.GetLogger().Debugf("Initialize database connection: %s", dsn)
