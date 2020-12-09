@@ -18,7 +18,7 @@
 *.dylib
 *_linux
 assets/node_modules/
-
+logs
 # Test binary
 *.test
 
