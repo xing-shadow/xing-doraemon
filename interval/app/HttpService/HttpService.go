@@ -14,8 +14,8 @@ import (
 	"xing-doraemon/interval/app/HttpService/Handler"
 	"xing-doraemon/interval/app/HttpService/middleware"
 	"xing-doraemon/interval/service/CasbinService"
-	"xing-doraemon/pkg/App/Resp"
 	"xing-doraemon/pkg/Utils"
+	"xing-doraemon/pkg/app/Resp"
 
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
