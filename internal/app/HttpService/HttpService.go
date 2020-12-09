@@ -29,6 +29,8 @@ func Init() error {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Use(middleware.Cors())
 	router.Use()
+	LoginMiddleware := middleware.LoginAuth("/antd/login", middleware.RedirectTypeHttp).Func()
+	router.GET("/", LoginMiddleware)
 	// static file
 	flag, err := Utils.IsFileExists("assets/build")
 	if err != nil || !flag {
@@ -42,7 +44,6 @@ func Init() error {
 		}
 		ctx.File("assets/build")
 	})
-	LoginMiddleware := middleware.LoginAuth("/antd/login", middleware.RedirectTypeJson).Func()
 	api := router.Group("/api/v1/")
 
 	/*
