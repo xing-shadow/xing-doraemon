@@ -74,7 +74,7 @@ func LoginAuth(loginURL string, redirectType RedirectType) *Auth {
 			if redirectType == RedirectTypeHttp {
 				ctx.Redirect(http.StatusFound, loginURL)
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{
+				ctx.JSON(http.StatusFound, gin.H{
 					"code": 302,
 					"msg":  fmt.Sprintf("%s", loginURL),
 					"data": "",

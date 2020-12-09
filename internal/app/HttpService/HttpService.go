@@ -36,7 +36,6 @@ func Init() error {
 	}
 	router.Static("/ant", "assets/build")
 	router.Static("/static", "assets/build/static")
-	router.StaticFile("/", "assets/build/index.html")
 	router.NoRoute(func(ctx *gin.Context) {
 		if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
 			ctx.JSON(http.StatusNotFound, http.StatusText(http.StatusNotFound))
