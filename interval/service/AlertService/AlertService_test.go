@@ -37,6 +37,25 @@ func TestA(t *testing.T) {
 	select {}
 }
 
+func TestConfirmAlertList(t *testing.T) {
+	p, _ := ants.NewPoolWithFunc(1000, func(i interface{}) {
+		fmt.Println("heihei")
+		time.Sleep(time.Second * 5)
+		fmt.Println("heihei1")
+	}, ants.WithPanicHandler(func(i interface{}) {
+		defer func() {
+			if err := recover(); err != nil {
+
+			}
+		}()
+	}), ants.WithExpiryDuration(time.Second*1))
+	p.Invoke(1)
+	for {
+		fmt.Println(p.Free())
+		time.Sleep(time.Second)
+	}
+}
+
 func TestQueryAlert(t *testing.T) {
 	global.GetAlterGatewayConfig().Mysql.DBType = "mysql"
 	global.GetAlterGatewayConfig().Mysql.DBUser = "root"

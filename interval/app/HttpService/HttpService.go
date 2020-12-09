@@ -43,7 +43,7 @@ func Init() error {
 		}
 		ctx.File("assets/build")
 	})
-	LoginMiddleware := middleware.LoginAuth("/ant/login", middleware.RedirectTypeJson).Func()
+	LoginMiddleware := middleware.LoginAuth("/antd/login", middleware.RedirectTypeJson).Func()
 	api := router.Group("/api/v1/")
 
 	/*
