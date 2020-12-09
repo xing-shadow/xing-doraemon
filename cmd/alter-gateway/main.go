@@ -13,8 +13,8 @@ import (
 	"path/filepath"
 	"syscall"
 	"xing-doraemon/global"
-	"xing-doraemon/interval/app"
-	"xing-doraemon/interval/service"
+	"xing-doraemon/internal/app"
+	"xing-doraemon/internal/service"
 )
 
 var configPath string

@@ -8,7 +8,7 @@ Mysql:
   DBType : "mysql"
   DBName: "doraemon"
   DBTns: "localhost:3306"
-  DBUser: "root"
+  DBUser: "xing"
   DBPasswd: "123456"
   DBLoc: "Asia%2FShanghai"
   DBConnTTL: 5
