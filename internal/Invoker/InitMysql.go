@@ -64,10 +64,10 @@ func ensureDatabase(errInfo error, dsn string, dbName string) (db *gorm.DB, err 
 				return nil, err
 			}
 		} else {
-			return nil, err
+			return nil, errInfo
 		}
 	default:
-		return nil, err
+		return nil, errInfo
 	}
 	// database created, maybe by DBA, but tables not created yet
 	if needInit {
