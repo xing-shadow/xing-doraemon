@@ -22,21 +22,19 @@ var (
 )
 
 func InitMysqlInvoker() (db *gorm.DB, err error) {
-	cfg := global.GetAlterGatewayConfig().Mysql
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
-		cfg.DBUser,
-		cfg.DBPasswd,
-		cfg.DBTns,
-		cfg.DBName,
-		cfg.DBLoc)
+		mysqlCofig.DBUser,
+		mysqlCofig.DBPasswd,
+		mysqlCofig.DBTns,
+		mysqlCofig.DBName,
+		mysqlCofig.DBLoc)
 
-	db, err = gorm.Open(cfg.DBType, dsn)
+	db, err = gorm.Open(mysqlCofig.DBType, dsn)
 	if err != nil {
-		if db, err = ensureDatabase(err, dsn, cfg.DBName); err != nil {
+		if db, err = ensureDatabase(err, dsn, mysqlCofig.DBName); err != nil {
 			return
 		}
 	}
-	ensureTables(db)
 	doraemonMysql = db
 	doraemonMysql.SingularTable(true)
 	doraemonMysql.LogMode(true)
@@ -59,7 +57,7 @@ func ensureDatabase(errInfo error, dsn string, dbName string) (db *gorm.DB, err 
 				return nil, err
 			}
 			defer dbForCreateDatabase.Close()
-			_, err = dbForCreateDatabase.DB().Exec(fmt.Sprintf("CREATE DATABASE %s CHARACTER SET utf8 COLLATE utf8_general_ci;", dbName))
+			_, err = dbForCreateDatabase.DB().Exec(fmt.Sprintf("CREATE DATABASE %s CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;", dbName))
 			if err != nil {
 				return nil, err
 			}
@@ -81,8 +79,6 @@ func ensureDatabase(errInfo error, dsn string, dbName string) (db *gorm.DB, err 
 			&mysqlDB.Prom{},
 			&mysqlDB.User{},
 			&mysqlDB.Plan{},
-			&mysqlDB.CasbinPolicyGroup{},
-			&mysqlDB.CasbinPolicyAuth{},
 		}
 		db.SingularTable(true)
 		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(models...)
@@ -90,47 +86,10 @@ func ensureDatabase(errInfo error, dsn string, dbName string) (db *gorm.DB, err 
 			Name:     "xing",
 			Password: Utils.Md5ToHex([]byte("123456")),
 		})
-		db.Create(&mysqlDB.CasbinPolicyGroup{
-			UserName:  "xing",
-			GroupName: "admin",
-		})
-		global.GetLogger().Info("create tables ok")
+		global.Log.Info("create tables ok")
 	}
-	global.GetLogger().Debugf("Initialize database connection: %s", dsn)
+	global.Log.Debug("Initialize database connection: " + dsn)
 	return
-}
-
-func ensureTables(db *gorm.DB) {
-	if ok := db.HasTable(&mysqlDB.Alert{}); !ok {
-		db.CreateTable(&mysqlDB.Alert{})
-	}
-	if ok := db.HasTable(&mysqlDB.Rule{}); !ok {
-		db.CreateTable(&mysqlDB.Rule{})
-	}
-	if ok := db.HasTable(&mysqlDB.Prom{}); !ok {
-		db.CreateTable(&mysqlDB.Prom{})
-	}
-	if ok := db.HasTable(&mysqlDB.User{}); !ok {
-		db.CreateTable(&mysqlDB.User{})
-		db.Create(&mysqlDB.User{
-			Name:     "xing",
-			Password: Utils.Md5ToHex([]byte("123456")),
-		})
-	}
-
-	if ok := db.HasTable(&mysqlDB.Plan{}); !ok {
-		db.CreateTable(&mysqlDB.Plan{})
-	}
-	if ok := db.HasTable(&mysqlDB.CasbinPolicyAuth{}); !ok {
-		db.CreateTable(&mysqlDB.CasbinPolicyAuth{})
-	}
-	if ok := db.HasTable(&mysqlDB.CasbinPolicyGroup{}); !ok {
-		db.CreateTable(&mysqlDB.CasbinPolicyGroup{})
-		db.Create(&mysqlDB.CasbinPolicyGroup{
-			UserName:  "xing",
-			GroupName: "admin",
-		})
-	}
 }
 
 func GetTrimDBName(dsn string) string {

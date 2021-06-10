@@ -4,7 +4,7 @@
  * @File : AlertHandle.go
  * @Software: GoLand
  */
-package Handler
+package Alert
 
 import (
 	"net/http"

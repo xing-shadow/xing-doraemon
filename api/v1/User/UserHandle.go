@@ -4,7 +4,7 @@
  * @File : UserHandle.go
  * @Software: GoLand
  */
-package Handler
+package User
 
 import (
 	"net/http"
@@ -20,17 +20,18 @@ import (
 // @Router /api/v1/rule [post]
 func UserLogin(ctx *Resp.Context) {
 	var param view.LoginReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	data, err := UserService.Login(param)
+	u, err := UserService.Login(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
+	UserService.UserSession.Save(ctx.Context, u)
+	ctx.ToResponse(Resp.MsgOk, "Success", ctx.WithStatus(http.StatusOK))
 	return
 }
 
@@ -42,7 +43,7 @@ func UserLogin(ctx *Resp.Context) {
 // @Router /api/v1/user/list [get]
 func UserList(ctx *Resp.Context) {
 	var param view.UserListReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -84,7 +85,7 @@ func UserCreate(ctx *Resp.Context) {
 // @Router /api/v1/user/update [put]
 func UserUpdate(ctx *Resp.Context) {
 	var param view.UserUpdateReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -105,7 +106,7 @@ func UserUpdate(ctx *Resp.Context) {
 // @Router /api/v1/user/delete [delete]
 func UserDelete(ctx *Resp.Context) {
 	var param view.UserDeleteReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return

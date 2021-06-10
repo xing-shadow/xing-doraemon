@@ -51,14 +51,14 @@ func (pThis DefaultAlertHandle) HandleAlert(task interface{}) {
 	}
 	var alerts []PromAlertItem
 	if err := json.Unmarshal(data, &alerts); err != nil {
-		global.GetLogger().Error("HandleAlert json.Unmarshal fail:", err)
+		global.Log.Error("HandleAlert json.Unmarshal fail:" + err.Error())
 		return
 	}
 	var dingTalkInfo DingTalkService.DingTalkInfo
 	if len(alerts) > 0 {
 		expr, err := GetExpression(uint(Utils.MustToInt(alerts[0].Annotations.RuleId)))
 		if err != nil {
-			global.GetLogger().Error("HandleAlert GetExpression fail:", err)
+			global.Log.Error("HandleAlert GetExpression fail:" + err.Error())
 			return
 		}
 		dingTalkInfo.Title = alerts[0].Annotations.Summary
@@ -77,7 +77,7 @@ func (pThis DefaultAlertHandle) HandleAlert(task interface{}) {
 		}
 	}
 	if err := DingTalkService.PushDingTalkInfo(dingTalkInfo); err != nil {
-		global.GetLogger().Error("HandleAlert PushDingTalkInfo fail:", err)
+		global.Log.Error("HandleAlert PushDingTalkInfo fail:" + err.Error())
 	}
 }
 
@@ -91,16 +91,16 @@ func GetExpression(ruleID uint) (string, error) {
 }
 
 func HandleOneAlert(oneAlert PromAlertItem) (labels string, send bool, err error) {
-	logger := global.GetLogger()
+	logger := global.Log
 	var alert db.Alert
 	labels, err = jsoniter.MarshalToString(oneAlert.Labels)
 	if err != nil {
-		logger.Error("HandleOneAlert json.Marshal Labels fail:", err)
+		logger.Error("HandleOneAlert json.Marshal Labels fail:" + err.Error())
 		return
 	}
 	err = opt.DB.Where("rule_id=? and labels=?", oneAlert.Annotations.RuleId, labels).Find(&alert).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		logger.Error("HandleOneAlert Find db.Alert fail:", err)
+		logger.Error("HandleOneAlert Find db.Alert fail:" + err.Error())
 		return
 	}
 	if alert.ConfirmedBy == "" {
@@ -118,7 +118,7 @@ func HandleOneAlert(oneAlert PromAlertItem) (labels string, send bool, err error
 			"last_at": alert.LastAt,
 		}).Error
 		if err != nil {
-			logger.Error("HandleOneAlert update count db.Alert fail:", err)
+			logger.Error("HandleOneAlert update count db.Alert fail:" + err.Error())
 		}
 	} else {
 		alert = db.Alert{
@@ -135,7 +135,7 @@ func HandleOneAlert(oneAlert PromAlertItem) (labels string, send bool, err error
 		}
 		err = opt.DB.Create(&alert).Error
 		if err != nil {
-			logger.Error("HandleOneAlert update Create db.Alert fail:", err)
+			logger.Error("HandleOneAlert update Create db.Alert fail:" + err.Error())
 		}
 	}
 	return

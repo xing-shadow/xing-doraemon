@@ -33,7 +33,7 @@ func (s MockStorage) Close() error {
 func NewMockStorage() (storage.Storage, error) {
 	dir, err := ioutil.TempDir("", "mock_storage")
 	if err != nil {
-
+		return nil, err
 	}
 	db, err := tsdb.Open(dir, nil, nil, &tsdb.Options{
 		MinBlockDuration:  model.Duration(time.Hour * 2),

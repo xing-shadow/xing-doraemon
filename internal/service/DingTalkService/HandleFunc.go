@@ -31,12 +31,12 @@ func HandleDingTalkInfoFunc(args interface{}) {
 	}
 	msgByte, err := json.Marshal(msg)
 	if err != nil {
-		global.GetLogger().Errorf("HandleDingTalkInfoFunc json.Marshal fail:%v", err)
+		global.Log.Error("HandleDingTalkInfoFunc json.Marshal fail:" + err.Error())
 		return
 	}
 	resp, err := opt.API.R().SetHeader("Content-Type", "application/json").SetBody(msgByte).Post(opt.PushAddr)
 	if err != nil {
-		global.GetLogger().Warn("send ding talk fail:", err)
+		global.Log.Warn("send ding talk fail:" + err.Error())
 	} else {
 		fmt.Println(resp)
 	}

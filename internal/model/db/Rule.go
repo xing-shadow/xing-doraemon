@@ -10,8 +10,8 @@ import "github.com/jinzhu/gorm"
 
 type Rule struct {
 	gorm.Model
-	PlanID      uint
-	PromID      uint
+	PlanID      uint `gorm:"unique"`
+	PromID      uint `gorm:"unique"`
 	Expr        string
 	Op          string
 	Value       string

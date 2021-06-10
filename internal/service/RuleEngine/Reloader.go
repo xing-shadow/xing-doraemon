@@ -8,12 +8,11 @@ package RuleEngine
 
 import (
 	"context"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
 	"github.com/jinzhu/gorm"
-	"github.com/prometheus/common/promlog"
+	"go.uber.org/zap"
 	"strconv"
 	"time"
+	"xing-doraemon/global"
 	"xing-doraemon/internal/model/db"
 )
 
@@ -30,25 +29,17 @@ type Reloader struct {
 	cancel   context.CancelFunc
 	running  bool
 
-	logger log.Logger
+	logger *zap.Logger
 }
 
 func NewReloader(cfg Config) *Reloader {
 	ctx, cancel := context.WithCancel(context.Background())
-	level := promlog.AllowedLevel{}
-	level.Set("debug")
-	formart := promlog.AllowedFormat{}
-	formart.Set("json")
-	logger := promlog.New(&promlog.Config{
-		Level:  &level,
-		Format: &formart,
-	})
 	reloader := &Reloader{
 		config:  cfg,
 		context: ctx,
 		cancel:  cancel,
 		running: false,
-		logger:  logger,
+		logger:  global.Log,
 	}
 
 	return reloader
@@ -76,9 +67,9 @@ func (r *Reloader) Start() {
 		r.Run()
 		for r.running {
 			r.Upload()
-
 			select {
 			case <-r.context.Done():
+				r.Stop()
 			case <-time.After(time.Duration(r.config.ReloadInterval)):
 			}
 		}
@@ -87,29 +78,30 @@ func (r *Reloader) Start() {
 
 // download the rules and update rule manager
 func (r *Reloader) Upload() error {
-	level.Debug(r.logger).Log("msg", "start update rule")
-	promrules, err := r.getPromRules()
+	r.logger.Info("start update rule")
+	promRules, err := r.getPromRules()
 	if err != nil {
 		return err
 	}
+
 	// stop invalid manager
 	for idx, m := range r.managers {
 		del := true
-		for _, p := range promrules {
+		for _, p := range promRules {
 			if m.Prom.ID == p.Prom.ID && m.Prom.URL == p.Prom.URL && p.Prom.URL != "" {
 				del = false
 			}
 		}
 		if del {
-			level.Info(r.logger).Log("msg", "prom not exist, delete manager", "prom_id", m.Prom.ID, "prom_url", m.Prom.URL)
+			r.logger.Warn("prom not exist, delete manager", zap.Int64("prom_id", m.Prom.ID), zap.String("prom_url", m.Prom.URL))
 			m.Stop()
 			r.managers = append(r.managers[:idx], r.managers[idx+1:]...)
 		}
 	}
 	// update rules
-	for _, p := range promrules {
+	for _, p := range promRules {
 		if p.Prom.URL == "" {
-			level.Error(r.logger).Log("msg", "prom url is null", "prom_id", p.Prom.ID, "prom_url", p.Prom.URL)
+			r.logger.Info("prom url is null", zap.Int64("prom_id", p.Prom.ID), zap.String("prom_url", p.Prom.URL))
 			continue
 		}
 		var manager *Manager
@@ -121,7 +113,7 @@ func (r *Reloader) Upload() error {
 		if manager == nil {
 			m, err := NewManager(r.context, r.logger, p.Prom, r.config)
 			if err != nil {
-				level.Error(r.logger).Log("msg", "create manager error", "error", err, "prom_id", manager.Prom.ID, "prom_url", manager.Prom.URL)
+				r.logger.Error("create manager fail:"+err.Error(), zap.Int64("prom_id", p.Prom.ID), zap.String("prom_url", p.Prom.URL))
 				return err
 			}
 			m.Run()
@@ -131,13 +123,13 @@ func (r *Reloader) Upload() error {
 		if manager != nil {
 			err := manager.Update(p.Rules)
 			if err != nil {
-				level.Error(r.logger).Log("msg", "update rule error", "error", err, "prom_id", manager.Prom.ID, "prom_url", manager.Prom.URL)
+				r.logger.Error("update rule error", zap.Int64("prom_id", manager.Prom.ID), zap.String("prom_url", manager.Prom.URL))
 			} else {
-				level.Info(r.logger).Log("msg", "update rule success", "len", len(p.Rules), "prom_id", manager.Prom.ID, "prom_url", manager.Prom.URL)
+				r.logger.Info("update rule success", zap.Int("len", len(p.Rules)), zap.Int64("prom_id", manager.Prom.ID), zap.String("prom_url", manager.Prom.URL))
 			}
 		}
 	}
-	level.Debug(r.logger).Log("msg", "end update rule")
+	r.logger.Debug("end update rule")
 	return nil
 }
 
@@ -149,7 +141,7 @@ func (r *Reloader) getPromRules() ([]PromRules, error) {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, err
 		}
-		level.Error(r.logger).Log("msg", "get proms fail", "error", err)
+		r.logger.Error("get proms fail:" + err.Error())
 		return nil, err
 	}
 	for _, prom := range proms {
@@ -157,7 +149,7 @@ func (r *Reloader) getPromRules() ([]PromRules, error) {
 		err := opt.DB.Where("prom_id=?", prom.ID).Find(&rulesDB).Error
 		if err != nil {
 			if !gorm.IsRecordNotFoundError(err) {
-				level.Error(r.logger).Log("msg", "get rules fail", "prom_id", prom.ID, "error", err)
+				r.logger.Error("get rules fail"+err.Error(), zap.Uint("prom_id", prom.ID))
 				continue
 			}
 		}

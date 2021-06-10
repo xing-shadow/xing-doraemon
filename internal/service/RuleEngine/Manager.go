@@ -10,14 +10,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
 	clienApi "github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/promql"
 	"github.com/prometheus/prometheus/rules"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -33,28 +32,27 @@ type Manager struct {
 	Manager *rules.Manager
 	Rules   Rules
 
-	logger log.Logger
+	logger *zap.Logger
 }
 
-func NewManager(ctx context.Context, logger log.Logger, prom Prom, cfg Config) (*Manager, error) {
+func NewManager(ctx context.Context, logger *zap.Logger, prom Prom, cfg Config) (*Manager, error) {
 	localStorage, err := NewMockStorage()
 	if err != nil {
 		return nil, err
 	}
 	options := &rules.ManagerOptions{
 		QueryFunc: HTTPQueryFunc(
-			log.With(logger, "component", "http query func"),
+			logger,
 			prom.URL,
 		),
 		NotifyFunc: HTTPNotifyFunc(
-			log.With(logger, "component", "http notify func"),
+			logger,
 			cfg.NotifyRetries,
 		),
 		Context:         ctx,
 		Appendable:      localStorage,
 		TSDB:            localStorage,
 		ExternalURL:     &url.URL{},
-		Logger:          log.With(logger, "component", "rule manager"),
 		OutageTolerance: time.Hour,
 		ForGracePeriod:  10 * time.Minute,
 		ResendDelay:     time.Minute,
@@ -73,13 +71,13 @@ func NewManager(ctx context.Context, logger log.Logger, prom Prom, cfg Config) (
 
 // Run ...
 func (m *Manager) Run() {
-	level.Info(m.logger).Log("msg", "start rule manager", "prom_id", m.Prom.ID)
+	m.logger.Info("start rule manager", zap.Int64("prom_id", m.Prom.ID))
 	m.Manager.Run()
 }
 
 // Stop ...
 func (m *Manager) Stop() {
-	level.Info(m.logger).Log("msg", "stop rule manager", "prom_id", m.Prom.ID)
+	m.logger.Warn("stop rule manager", zap.Int64("prom_id", m.Prom.ID))
 	m.Manager.Stop()
 }
 
@@ -88,20 +86,19 @@ func (m *Manager) Update(rules Rules) error {
 	filePath := filepath.Join(os.TempDir(), fmt.Sprintf("rule.%d.yml", m.Prom.ID))
 	content, err := rules.Content()
 	if err != nil {
-		level.Error(m.logger).Log("msg", "get prom rule error", "error", err, "prom_id", m.Prom.ID)
+		m.logger.Error("get prom rule fail:"+err.Error(), zap.Int64("prom_id", m.Prom.ID))
 		return err
 	}
-	level.Info(m.logger).Log("path", filePath)
 	err = ioutil.WriteFile(filePath, content, 0644)
 	if err != nil {
-		level.Error(m.logger).Log("msg", "write file error", "error", err, "prom_id", m.Prom.ID)
+		m.logger.Error("write file fail:"+err.Error(), zap.Int64("prom_id", m.Prom.ID))
 		return err
 	}
 	return m.Manager.Update(time.Duration(m.Config.EvaluationInterval), []string{filePath}, nil)
 }
 
 // HTTPNotifyFunc
-func HTTPNotifyFunc(logger log.Logger, retries int) rules.NotifyFunc {
+func HTTPNotifyFunc(logger *zap.Logger, retries int) rules.NotifyFunc {
 	return func(ctx context.Context, expr string, alerts ...*rules.Alert) {
 		if len(alerts) == 0 {
 			return
@@ -112,16 +109,16 @@ func HTTPNotifyFunc(logger log.Logger, retries int) rules.NotifyFunc {
 		}
 		data, err := json.Marshal(newAlerts)
 		if err != nil {
-			level.Error(logger).Log("msg", "encode json error", "error", err, "alerts", alerts)
+			logger.Error("encode json fail:" + err.Error())
 			return
 		}
 		for i := 0; i < retries; i++ {
 			err := AlertService.PushNotify(data)
 			if err != nil {
-				level.Error(logger).Log("msg", "notify error", "error", err, "retries", i)
+				logger.Error("notify error"+err.Error(), zap.Int("retries", i))
 				time.Sleep(time.Second)
 			} else {
-				level.Debug(logger).Log("msg", "notify success")
+				logger.Info("notify success")
 				return
 			}
 		}
@@ -130,7 +127,7 @@ func HTTPNotifyFunc(logger log.Logger, retries int) rules.NotifyFunc {
 
 // HTTPQueryFunc
 // TODO: use http keep-alive
-func HTTPQueryFunc(logger log.Logger, url string) rules.QueryFunc {
+func HTTPQueryFunc(logger *zap.Logger, url string) rules.QueryFunc {
 	c, _ := clienApi.NewClient(clienApi.Config{
 		Address: url,
 	})
@@ -159,14 +156,10 @@ func HTTPQueryFunc(logger log.Logger, url string) rules.QueryFunc {
 					Metric: l,
 				})
 			}
-			level.Debug(logger).Log(
-				"msg", "query vector seccess",
-				"query", q,
-				"vector", vector,
-			)
+			logger.Info("query vector success", zap.String("query", q), zap.Any("vector", vector))
 			return vector, nil
 		default:
-			// TODO: other type: "matrix" | "vector" | "scalar" | "string",
+			// TODO: other type: "matrix" | "scalar" | "string",
 			return vector, fmt.Errorf("unknown result type [%s] query=[%s]", value.Type().String(), q)
 		}
 	}

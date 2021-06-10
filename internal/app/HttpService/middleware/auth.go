@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"xing-doraemon/pkg/Auth/JwtAuth"
+	"xing-doraemon/internal/service/UserService"
 )
 
 const (
@@ -46,40 +46,28 @@ func GetUserName(ctx *gin.Context) (string, bool) {
 	}
 }
 
-type RedirectType string
-
-const (
-	RedirectTypeHttp RedirectType = "http_redirect"
-	RedirectTypeJson RedirectType = "json_redirect"
-)
-
 var RedirectParam string = "return_url"
 
-func LoginAuth(loginURL string, redirectType RedirectType) *Auth {
+func LoginAuth(loginURL string) *Auth {
 	return &Auth{
 		Authenticator: func(ctx *gin.Context) error {
-			token := ctx.Request.Header.Get("Authorization")
-			if len(token) == 0 {
-				return errors.New("no Authorization")
+			u := UserService.GetUser(ctx)
+			if !u.IsLogin() {
+				return errors.New("no session")
 			}
-			claims, err := JwtAuth.ParseToken(token)
+			err := UserService.UserSession.Save(ctx, u)
 			if err != nil {
-				return err
-			} else {
-				setUserName(ctx, claims.Username)
-				return nil
+				return errors.New(fmt.Sprintf("update session err: %s", err.Error()))
 			}
+			ctx.Set("user", u)
+			return nil
 		},
 		Unauthorized: func(ctx *gin.Context) {
-			if redirectType == RedirectTypeHttp {
-				ctx.Redirect(http.StatusFound, loginURL)
-			} else {
-				ctx.JSON(http.StatusFound, gin.H{
-					"code": 302,
-					"msg":  fmt.Sprintf("%s", loginURL),
-					"data": "",
-				})
-			}
+			ctx.JSON(http.StatusFound, gin.H{
+				"code": 302,
+				"msg":  fmt.Sprintf("%s", loginURL),
+				"data": "",
+			})
 		},
 	}
 }

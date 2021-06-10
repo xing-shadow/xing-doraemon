@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button ,message} from 'antd';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 import './index.scss';
-import { LoginUser } from '@/api/index.js';
-import { SaveToken } from '@/utils/Token'
+import { LoginUser } from '../../api/index.js';
 class UserLogin extends Component {
     constructor(props) {
         super(props);
@@ -15,9 +14,18 @@ class UserLogin extends Component {
             password: password,
         }
         LoginUser(req).then(res => {
-            SaveToken(res.data.token);
-            this.props.history.push("/antd/dist/prom/list");
-        })
+            if (res.code === 0) {
+                this.props.history.push("/antd/dist/prom/list");
+            }else if (res.code === 302){
+                this.props.history.push(res.msg);
+            }else {
+                message.destroy();
+                message.error("登录失败");
+            }
+        }).catch(function (err){
+            message.destroy();
+            message.error("请求失败");
+        });
     }
     render() {
         return (

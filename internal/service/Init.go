@@ -7,10 +7,9 @@
 package service
 
 import (
-	"xing-doraemon/global"
+	"xing-doraemon/configs"
 	"xing-doraemon/internal/Invoker"
 	"xing-doraemon/internal/service/AlertService"
-	"xing-doraemon/internal/service/CasbinService"
 	"xing-doraemon/internal/service/DingTalkService"
 	"xing-doraemon/internal/service/PlanService"
 	"xing-doraemon/internal/service/PromService"
@@ -24,43 +23,34 @@ func Init() error {
 	/*
 		导入数据连接
 	*/
-	if err := Invoker.Init(); err != nil {
+	if err := Invoker.Init(configs.Cfg.Mysql); err != nil {
 		return err
 	}
-	UserService.Init(UserService.Option{DB: Invoker.MysqlInvoker})
+	UserService.Init(UserService.Option{DB: Invoker.MysqlInvoker, SessCfg: configs.Cfg.Session})
 
 	RuleService.Init(RuleService.Option{DB: Invoker.MysqlInvoker})
 
 	PlanService.Init(PlanService.Option{DB: Invoker.MysqlInvoker})
 
 	PromService.Init(PromService.Option{DB: Invoker.MysqlInvoker})
+
 	if err := DingTalkService.Init(DingTalkService.Option{
-		PushAddr: global.GetAlterGatewayConfig().Send.WebHook,
+		PushAddr: configs.Cfg.Send.WebHook,
 	}); err != nil {
 		return err
 	}
+
 	if err := AlertService.Init(AlertService.Option{DB: Invoker.MysqlInvoker}); err != nil {
 		return err
 	}
 
-	if global.GetAlterGatewayConfig().RuleEngine.Enable {
-		RuleEngine.Init(RuleEngine.Option{
-			DB: Invoker.MysqlInvoker,
-			Cfg: RuleEngine.Config{
-				NotifyRetries:      global.GetAlterGatewayConfig().RuleEngine.NotifyRetries,
-				EvaluationInterval: xtime.ToDuration(global.GetAlterGatewayConfig().RuleEngine.EvaluationInterval),
-				ReloadInterval:     xtime.ToDuration(global.GetAlterGatewayConfig().RuleEngine.ReloadInterval),
-			},
-		})
-	}
-
-	if global.GetAlterGatewayConfig().Casbin.Enable {
-		if err := CasbinService.Init(CasbinService.Option{
-			DB:     Invoker.MysqlInvoker,
-			Config: global.GetAlterGatewayConfig().Casbin,
-		}); err != nil {
-			return err
-		}
-	}
+	RuleEngine.Init(RuleEngine.Option{
+		DB: Invoker.MysqlInvoker,
+		Cfg: RuleEngine.Config{
+			NotifyRetries:      configs.Cfg.RuleEngine.NotifyRetries,
+			EvaluationInterval: xtime.ToDuration(configs.Cfg.RuleEngine.EvaluationInterval),
+			ReloadInterval:     xtime.ToDuration(configs.Cfg.RuleEngine.ReloadInterval),
+		},
+	})
 	return nil
 }

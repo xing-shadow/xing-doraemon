@@ -6,10 +6,6 @@
  */
 package view
 
-type LoginResp struct {
-	Token string `json:"token"`
-}
-
 type UserListResp struct {
 	PaginationResp
 	UserList []UserItem `json:"user_list"`

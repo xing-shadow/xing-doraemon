@@ -1,30 +1,35 @@
 App:
   Httpport: 8080
   Runmode: "dev"
-  Sessionon: true
-  Secret: 'xing-shadow'
+
+Logger:
+  LogDir: ""#日志输出目录（空为程序运行目录）
+  FiLeName: ""#日志输出文件名（空为程序名）
+  Level: "info"#日志等级
+  MaxSize: 500   #单位MB
+  MaxBackups: 5 # 旧文件最大数量
+  MaxAge: 5 #旧文件最大保存时间 单位:天
+  Development: true #输出到终端
+
+Session:
+  MaxAge: 172800
+  Secret: "ldfgoqnf935nvav34"
+  Type: ""
+
 
 Mysql:
-  DBType : "mysql"
+  DBType: "mysql"
   DBName: "doraemon"
   DBTns: "localhost:3306"
-  DBUser: "xing"
+  DBUser: "root"
   DBPasswd: "123456"
   DBLoc: "Asia%2FShanghai"
   DBConnTTL: 5
-
-Casbin:
-  Enable: false
-  Debug: false
-  Model: './configs/model.conf'
-  AutoLoad: true
-  AutoLoadInterval: '1m'
 
 Send:
   WebHook: 'https://oapi.dingtalk.com/robot/send?access_token=af44402c610aed2f6a7b691e451acc400c617327614fadfd96badf21b4df8802'
 
 RuleEngine:
-  Enable: false
   NotifyRetries: 3
   EvaluationInterval: '15s'
   ReloadInterval: '5m'

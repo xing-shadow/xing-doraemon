@@ -4,7 +4,6 @@ import { Layout,Button } from 'antd';
 import Aside from '../../components/Aside/index';
 import ContainerMain from '../../components/Container/index';
 import {MenuFoldOutlined} from '@ant-design/icons';
-import {DeleteToken} from '@/utils/Token';
 const { Header, Content, Sider } = Layout;
 class Index extends Component {
     constructor(props) {
@@ -19,7 +18,6 @@ class Index extends Component {
         });
     }
     Logout = ()=>{
-        DeleteToken();
         this.props.history.push('/antd/login');
     }
     render() {

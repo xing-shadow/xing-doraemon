@@ -7,31 +7,42 @@
 package UserService
 
 import (
+	"encoding/gob"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"xing-doraemon/internal/model/db"
 	"xing-doraemon/internal/model/view"
-	"xing-doraemon/pkg/Auth/JwtAuth"
 	"xing-doraemon/pkg/Utils"
 )
 
-func Login(req view.LoginReq) (resp view.LoginResp, err error) {
+func InitUser() {
+	gob.Register(&db.User{})
+}
+
+// GetUser ...
+func GetUser(c *gin.Context) *db.User {
+	user := UserSession.Read(c)
+	// return default user
+	if user == nil {
+		return &db.User{}
+	}
+	return user
+}
+
+func Login(req view.LoginReq) (u *db.User, err error) {
 	var user db.User
 	err = opt.DB.Where("name=?", req.Username).First(&user).Error
 	if err != nil {
-		return view.LoginResp{}, err
+		return
 	}
 	md5Password := Utils.Md5ToHex([]byte(req.Password))
 	if md5Password != user.Password {
-		return view.LoginResp{}, errors.New("username or password error")
-	}
-	var token string
-	if token, err = JwtAuth.GenerateToken(user.ID, user.Name); err != nil {
-		return view.LoginResp{}, errors.New("generate token fail: " + err.Error())
-	} else {
-		resp.Token = token
+		err = errors.New("username or password error")
 		return
 	}
+	u = &user
+	return
 }
 
 func UserList(req view.UserListReq) (resp view.UserListResp, err error) {
@@ -78,7 +89,7 @@ func CreateUser(req view.UserCreateReq) (err error) {
 		return errors.New("The user already exists ")
 	}
 	md5Password := Utils.Md5ToHex([]byte(req.Password))
-	err = opt.Create(&db.User{
+	err = opt.DB.Save(&db.User{
 		Name:     req.UserName,
 		Password: md5Password,
 	}).Error

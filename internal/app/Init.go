@@ -6,11 +6,15 @@
  */
 package app
 
-import "xing-doraemon/internal/app/HttpService"
+import (
+	"xing-doraemon/configs"
+	"xing-doraemon/internal/app/HttpService"
+)
 
-func Init() error {
-	if err := HttpService.Init(); err != nil {
-		return err
-	}
-	return nil
+func Init(exit chan error) {
+	go func() {
+		if err := HttpService.Init(configs.Cfg.App); err != nil {
+			exit <- err
+		}
+	}()
 }

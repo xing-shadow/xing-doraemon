@@ -1,24 +1,17 @@
-/*
-@Time : 2020/8/24 17:35
-@Author : wangyl
-@File : setting.go
-@Software: GoLand
-*/
-package setting
+package configs
 
 import (
 	"errors"
+	"github.com/spf13/viper"
 	"path/filepath"
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
 type Setting struct {
 	vp *viper.Viper
 }
 
-func NewSetting(configPath string) (*Setting, error) {
+func newSetting(configPath string) (*Setting, error) {
 	dir := filepath.Dir(configPath)
 	parts := strings.Split(filepath.Base(configPath), ".")
 	var filename, ext string

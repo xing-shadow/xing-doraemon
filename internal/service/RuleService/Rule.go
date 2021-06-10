@@ -45,12 +45,12 @@ func GetPaginationRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 	offset = (page - 1) * pageSize
 	err = opt.DB.Find(&rules).Offset(offset).Limit(pageSize).Error
 	if err != nil {
-		global.GetLogger().Error("get rules from mysql fail:", err)
+		global.Log.Error("get rules from mysql fail:" + err.Error())
 		return
 	}
 	err = opt.DB.Model(&db.Rule{}).Count(&count).Error
 	if err != nil {
-		global.GetLogger().Error("get rules counts from mysql fail:", err)
+		global.Log.Error("get rules counts from mysql fail:" + err.Error())
 		return
 	}
 	resp.Total = count

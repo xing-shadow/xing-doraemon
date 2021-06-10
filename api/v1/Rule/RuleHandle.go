@@ -4,7 +4,7 @@
  * @File : RuleHandle.go
  * @Software: GoLand
  */
-package Handler
+package Rule
 
 import (
 	"net/http"

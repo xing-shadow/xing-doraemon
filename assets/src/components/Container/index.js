@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {Switch} from 'react-router-dom';
-import PrivateRoute from '@/components/private_route/Index';
+import {Switch,Route} from 'react-router-dom';
+
 const files = require.context("../../view/",true,/\.js$/)
 const compoents = [];
 files.keys().map(item => {
@@ -29,7 +29,7 @@ class ContaninerMain extends Component {
             <Switch>
                 {
                     compoents.map(item=> {
-                        return <PrivateRoute key={item.path} exact path={item.path} component={item.component}></PrivateRoute>
+                        return <Route key={item.path} exact path={item.path} component={item.component}></Route>
                     })
                 }
             </Switch>

@@ -83,7 +83,6 @@ func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 }
 
 func CreatePlan(req view.CreatePlanReq) (err error) {
-	//TODO add UserService
 	var plan db.Plan
 	err = opt.DB.Where("start_time=? and end_time=? and period=? and expression=?", req.StartTime, req.EndTime, req.Period, req.Expression).First(&plan).Error
 	if err != nil {

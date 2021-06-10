@@ -1,91 +1,92 @@
 /*
- * @Time : 2020/10/22 16:18
+ * @Time : 2020/10/22 14:49
  * @Author : wangyl
- * @File : PromHandle.go
+ * @File : PlanHandle.go
  * @Software: GoLand
  */
-package Handler
+package Plan
 
 import (
 	"net/http"
 	"xing-doraemon/internal/model/view"
-	"xing-doraemon/internal/service/PromService"
+	"xing-doraemon/internal/service/PlanService"
 	"xing-doraemon/pkg/App/Resp"
 )
 
-// @Summary 获取proms, 分页
+// @Summary 获取单个Plan
 // @Produce  json
-// @Param page query string true "页序号"
-// @Param page_size query string true "页大小"
+// @Param id query string true "序号"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [get]
-func GetPromsPagination(ctx *Resp.Context) {
-	var param view.GetProms
+// @Router /api/v1/planID [get]
+func GetPlan(ctx *Resp.Context) {
+	var param view.GetPlan
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	data, err := PromService.GetPromPagination(param)
+	if param.Id <= 0 {
+		ctx.ToResponse(Resp.MsgError, "invalid params", ctx.WithStatus(http.StatusOK))
+		return
+	}
+	data, err := PlanService.GetPlan(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
 	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-
-	return
-}
-
-// @Summary 获取单个prom
-// @Produce  json
-// @Param Id query string true "页序号"
-// @Success 200 {object} Resp.Response
-// @Router /api/v1/promId [get]
-func GetProm(ctx *Resp.Context) {
-	var param view.GetProm
-	err := ctx.BindParam(&param)
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	data, err := PromService.GetProm(param)
-	if err != nil {
-		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-
 	return
 }
 
 // @Summary 获取所有prom名
 // @Produce  json
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom/allName [get]
-func GetPromAllName(ctx *Resp.Context) {
-	data, err := PromService.GetPromAllName()
+// @Router /api/v1/plan/allNames [get]
+func GetPlanAllName(ctx *Resp.Context) {
+	data, err := PlanService.GetPlanAllName()
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
 	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
-
 	return
 }
 
-// @Summary 创建prom
+// @Summary 获取Plan列表，分页
 // @Produce  json
-// @Param body body view.CreateProm true "body"
+// @Param page query string true "页序号"
+// @Param page_size query string true "页大小"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [post]
-func CreateProm(ctx *Resp.Context) {
-	var param view.CreateProm
+// @Router /api/v1/plan [get]
+func GetPlanPagination(ctx *Resp.Context) {
+	var param view.GetPlanList
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	err = PromService.CreateProms(param)
+	data, err := PlanService.GetPlanPagination(param)
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	ctx.ToResponse(Resp.MsgOk, "success", ctx.WithStatus(http.StatusOK), ctx.WithData(data))
+	return
+}
+
+// @Summary 创建plan
+// @Produce  json
+// @Param body body view.CreatePlanReq true "body"
+// @Success 200 {object} Resp.Response
+// @Router /api/v1/plan [post]
+func CreatePlan(ctx *Resp.Context) {
+	var param view.CreatePlanReq
+	err := ctx.BindParam(&param)
+	if err != nil {
+		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
+		return
+	}
+	err = PlanService.CreatePlan(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -94,19 +95,19 @@ func CreateProm(ctx *Resp.Context) {
 	return
 }
 
-// @Summary 修改prom
+// @Summary 修改plan
 // @Produce  json
-// @Param body body view.ModifyProm true "body"
+// @Param body body view.ModifyPlanReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [put]
-func ModifyProm(ctx *Resp.Context) {
-	var param view.ModifyProm
+// @Router /api/v1/plan [put]
+func ModifyPlan(ctx *Resp.Context) {
+	var param view.ModifyPlanReq
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	err = PromService.ModifyProm(param)
+	err = PlanService.ModifyPlan(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -115,19 +116,19 @@ func ModifyProm(ctx *Resp.Context) {
 	return
 }
 
-// @Summary 删除prom
+// @Summary 删除plan
 // @Produce  json
-// @Param body body view.DeleteProm true "body"
+// @Param body body view.DeleteRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [delete]
-func DeleteProm(ctx *Resp.Context) {
-	var param view.DeleteProm
+// @Router /api/v1/plan [delete]
+func DeletePlan(ctx *Resp.Context) {
+	var param view.DeleteRuleReq
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	err = PromService.DeleteProm(param)
+	err = PlanService.DeletePlan(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return

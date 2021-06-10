@@ -1,6 +1,0 @@
-p,admin,/hello,get
-p,admin,/hello,delete
-p,user,/hello,post
-
-g,xing,admin
-g,tom,user

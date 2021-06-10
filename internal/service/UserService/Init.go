@@ -6,14 +6,21 @@
  */
 package UserService
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"xing-doraemon/configs"
+)
 
 var opt Option
+var UserSession userSession
 
 type Option struct {
-	*gorm.DB
+	DB      *gorm.DB
+	SessCfg configs.Session
 }
 
 func Init(option Option) {
 	opt = option
+	InitUser()
+	initUserSession()
 }

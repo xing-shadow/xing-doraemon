@@ -17,3 +17,10 @@ type User struct {
 func (u User) TableName() string {
 	return "user"
 }
+
+func (u *User) IsLogin() bool {
+	if u.ID > 0 {
+		return true
+	}
+	return false
+}
