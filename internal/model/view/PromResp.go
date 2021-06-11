@@ -1,14 +1,8 @@
-/*
- * @Time : 2020/10/22 15:45
- * @Author : wangyl
- * @File : PromResp.go
- * @Software: GoLand
- */
 package view
 
 type PromList struct {
-	PaginationResp
-	PromList []PromItem `json:"prom_list"`
+	Pagination `json:"pagination"`
+	PromList   []PromItem `json:"list"`
 }
 
 type PromItem struct {

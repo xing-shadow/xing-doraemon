@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/13 17:32
- * @Author : wangyl
- * @File : UserService.go
- * @Software: GoLand
- */
 package UserService
 
 import (
@@ -60,7 +54,7 @@ func UserList(req view.UserListReq) (resp view.UserListResp, err error) {
 		pageSize = req.PageSize
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Offset(offset).Limit(pageSize).Find(&users).Error
+	err = opt.DB.Select("id, name").Offset(offset).Limit(pageSize).Find(&users).Error
 	if err != nil {
 		return view.UserListResp{}, err
 	}
@@ -76,12 +70,13 @@ func UserList(req view.UserListReq) (resp view.UserListResp, err error) {
 	}
 	resp.Total = count
 	resp.CurrentPage = int(page)
+	resp.PageSize = int(pageSize)
 	return
 }
 
 func CreateUser(req view.UserCreateReq) (err error) {
 	var user db.User
-	err = opt.DB.Where("name=?", req.UserName).First(&user).Error
+	err = opt.DB.Select("id").Where("name=?", req.UserName).First(&user).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return err
 	}
@@ -96,25 +91,29 @@ func CreateUser(req view.UserCreateReq) (err error) {
 	return
 }
 
-func UpdateUser(req view.UserUpdateReq) (err error) {
+func UpdateUserPasswd(req view.UserUpdateReq) (err error) {
 	var user db.User
 	err = opt.DB.Where("id=?", req.Id).First(&user).Error
 	if err != nil {
 		return err
 	}
-	err = opt.DB.Model(&db.User{}).Where("id=?", req.Id).Updates(&db.User{
-		Name:     req.UserName,
-		Password: req.Password,
-	}).Error
+	if user.Name != req.UserName {
+		err = errors.New("用户信息错误")
+		return
+	}
+	user.Password = Utils.Md5ToHex([]byte(req.Password))
+	err = opt.DB.Save(&user).Error
 	return
 }
 
 func DeleteUser(req view.UserDeleteReq) (err error) {
 	var user db.User
-	err = opt.DB.Where("id=?", req.Id).First(&user).Error
+	err = opt.DB.Where("id=?", req.Id).Delete(&user).Error
 	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			err = errors.New("该记录不存在")
+		}
 		return err
 	}
-	err = opt.DB.Where("id=?", req.Id).Delete(&user).Error
 	return
 }

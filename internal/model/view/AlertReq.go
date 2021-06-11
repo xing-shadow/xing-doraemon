@@ -1,13 +1,8 @@
-/*
- * @Time : 2020/10/23 15:56
- * @Author : wangyl
- * @File : AlertReq.go
- * @Software: GoLand
- */
 package view
 
 type GetAlertsReq struct {
-	PaginationRequest
+	Page     uint `json:"page"`
+	PageSize uint `json:"page_size"`
 }
 
 type ConfirmAlertsReq struct {

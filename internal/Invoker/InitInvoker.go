@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/19 16:38
- * @Author : wangyl
- * @File : InitInvoker.go
- * @Software: GoLand
- */
 package Invoker
 
 import (

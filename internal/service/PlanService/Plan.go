@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/22 14:53
- * @Author : wangyl
- * @File : Plan.go
- * @Software: GoLand
- */
 package PlanService
 
 import (
@@ -15,7 +9,7 @@ import (
 
 func GetPlan(req view.GetPlan) (resp view.PlanItem, err error) {
 	var plan db.Plan
-	err = opt.DB.Where("id=?", req.Id).First(&plan).Error
+	err = opt.DB.Select("id, name, expression, start_time, end_time, period").Where("id=?", req.Id).First(&plan).Error
 	if err != nil {
 		return
 	}
@@ -79,6 +73,7 @@ func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 	}
 	resp.CurrentPage = page
 	resp.Total = count
+	resp.PageSize = pageSize
 	return
 }
 

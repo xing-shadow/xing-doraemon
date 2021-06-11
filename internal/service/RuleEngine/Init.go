@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/23 14:39
- * @Author : wangyl
- * @File : Init.go
- * @Software: GoLand
- */
 package RuleEngine
 
 import "github.com/jinzhu/gorm"

@@ -5,7 +5,8 @@ type GetRule struct {
 }
 
 type GetRulesReq struct {
-	PaginationRequest
+	Page     uint `json:"page"`
+	PageSize uint `json:"page_size"`
 }
 
 type CreateRuleReq struct {

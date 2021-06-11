@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { GetPormList,DeleProm } from "../../api/index";
+import { GetPromList,DeleteProm } from "../../api/prom";
 import { Table, Space,Button,Form,Input,Pagination,Modal,message  } from 'antd';
 
 class PromList extends Component {
@@ -62,7 +62,7 @@ class PromList extends Component {
                 page_size: this.state.page_size,
                 name: this.state.search_name,
             }
-            GetPormList(req).then(res => {
+            GetPromList(req).then(res => {
                 if (res.code === 0) {
                     if (res.data.prom_list) {
                         res.data.prom_list.map((item, index) => {
@@ -125,7 +125,7 @@ class PromList extends Component {
             const param = {
                 id:this.state.id,
             }
-            DeleProm(param).then((res) => {
+            DeleteProm(param).then((res) => {
                 console.log(res);
                 if (res.code === 0) {
                     message.destroy();

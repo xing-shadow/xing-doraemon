@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Modal, Form, Input, TimePicker, InputNumber, message, Space, Table, Pagination ,Popconfirm} from 'antd';
 import moment from 'moment';
-import { AddPlan, GetPlan,DeletePlan } from '@/api/index';
+import { AddPlan, GetPlanList,DeletePlan } from '../../api/plan';
 const { RangePicker } = TimePicker;
 const layout = {
     labelCol: { span: 6 },
@@ -100,7 +100,7 @@ class PlanList extends Component {
                 page: this.state.current_page,
                 page_size: this.state.page_size,
             }
-            GetPlan(req).then(res => {
+            GetPlanList(req).then(res => {
                 if (res.code === 0) {
                     if (res.data.plan_list) {
                         res.data.plan_list.map((item, index) => {

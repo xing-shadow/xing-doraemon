@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/22 14:46
- * @Author : wangyl
- * @File : PlanReq.go
- * @Software: GoLand
- */
 package view
 
 type GetPlan struct {
@@ -13,7 +7,8 @@ type GetPlan struct {
 type GetPlanList struct {
 	StartTime uint `query:"start_time"`
 	EndTime   uint `query:"end_time"`
-	PaginationRequest
+	Page      uint `json:"page"`
+	PageSize  uint `json:"page_size"`
 }
 
 type CreatePlanReq struct {

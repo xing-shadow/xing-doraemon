@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/12 11:21
- * @Author : wangyl
- * @File : Init.go
- * @Software: GoLand
- */
 package DingTalkService
 
 import (

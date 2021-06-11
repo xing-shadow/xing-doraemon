@@ -1,8 +1,8 @@
 package view
 
 type RuleList struct {
-	PaginationResp
-	Rules []RuleItem `json:"rules"`
+	Pagination `json:"pagination"`
+	Rules      []RuleItem `json:"list"`
 }
 
 type RuleItem struct {

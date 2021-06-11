@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Modal, Form, Button, Input,Select,message,Space ,Popconfirm,Table,InputNumber,Pagination} from 'antd';
-import {GetPromAllName,GetPlanAllName,GetRule,AddRule,GetRuleId,EditRule,DeleteRule} from '@/api/index';
+import {GetPromAllName,GetPlanAllName} from '../../api/index';
+import {GetRule,AddRule,GetRuleList,EditRule,DeleteRule} from  '../../api/rule';
 const { Option } = Select;
 const layout = {
     labelCol: { span: 6 },
@@ -63,7 +64,7 @@ class RuleList extends Component {
                     key: 'action',
                     render: (text, record) => (
                         <Space size="middle">
-                            <Button type="primary" className="btn-table-edit" onClick={this.OnClieckEditRule.bind(this,record)}>
+                            <Button type="primary" className="btn-table-edit" onClick={this.OnClickEditRule.bind(this,record)}>
                                 编辑
                             </Button>
                             <Popconfirm
@@ -85,9 +86,9 @@ class RuleList extends Component {
     componentDidMount(){
         this.GetPromNameList();
         this.GetPlanNameList();
-        this.GetRuleLsit();
+        this.GetRuleList();
     }
-    GetRuleLsit = () => {
+    GetRuleList = () => {
         this.setState({
             loading:true,
         },()=> {
@@ -95,7 +96,7 @@ class RuleList extends Component {
                 page: this.state.current_page,
                 page_size: this.state.page_size,
             }
-            GetRule(req).then(res => {
+            GetRuleList(req).then(res => {
                 if (res.code === 0) {
                     if (res.data.rules) {
                         res.data.rules.map((item,index) => {
@@ -122,7 +123,7 @@ class RuleList extends Component {
             })
         })
     }
-    OnClieckEditRule(record) {
+    OnClickEditRule(record) {
         this.setState({
             visible:true,
             id: record.id
@@ -130,7 +131,7 @@ class RuleList extends Component {
             const req = {
                 id:this.state.id
             }
-            GetRuleId(req).then(res => {
+            GetRule(req).then(res => {
                 if (res.code === 0) {
                     this.refs.form.setFieldsValue({
                         metrics:res.data.expr,

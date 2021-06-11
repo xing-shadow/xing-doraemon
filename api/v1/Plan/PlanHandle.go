@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/22 14:49
- * @Author : wangyl
- * @File : PlanHandle.go
- * @Software: GoLand
- */
 package Plan
 
 import (
@@ -17,16 +11,12 @@ import (
 // @Produce  json
 // @Param id query string true "序号"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/planID [get]
+// @Router /api/v1/plan [get]
 func GetPlan(ctx *Resp.Context) {
 	var param view.GetPlan
 	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	if param.Id <= 0 {
-		ctx.ToResponse(Resp.MsgError, "invalid params", ctx.WithStatus(http.StatusOK))
 		return
 	}
 	data, err := PlanService.GetPlan(param)
@@ -41,7 +31,7 @@ func GetPlan(ctx *Resp.Context) {
 // @Summary 获取所有prom名
 // @Produce  json
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/plan/allNames [get]
+// @Router /api/v1/plan/allName [get]
 func GetPlanAllName(ctx *Resp.Context) {
 	data, err := PlanService.GetPlanAllName()
 	if err != nil {
@@ -57,7 +47,7 @@ func GetPlanAllName(ctx *Resp.Context) {
 // @Param page query string true "页序号"
 // @Param page_size query string true "页大小"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/plan [get]
+// @Router /api/v1/plans [get]
 func GetPlanPagination(ctx *Resp.Context) {
 	var param view.GetPlanList
 	err := ctx.BindParam(&param)
@@ -78,7 +68,7 @@ func GetPlanPagination(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.CreatePlanReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/plan [post]
+// @Router /api/v1/plan/add [post]
 func CreatePlan(ctx *Resp.Context) {
 	var param view.CreatePlanReq
 	err := ctx.BindParam(&param)
@@ -99,7 +89,7 @@ func CreatePlan(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.ModifyPlanReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/plan [put]
+// @Router /api/v1/plan/update [post]
 func ModifyPlan(ctx *Resp.Context) {
 	var param view.ModifyPlanReq
 	err := ctx.BindParam(&param)
@@ -120,7 +110,7 @@ func ModifyPlan(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.DeleteRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/plan [delete]
+// @Router /api/v1/plan/delete [delete]
 func DeletePlan(ctx *Resp.Context) {
 	var param view.DeleteRuleReq
 	err := ctx.BindParam(&param)

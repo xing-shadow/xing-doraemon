@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/12 15:41
- * @Author : wangyl
- * @File : utlis_test.go
- * @Software: GoLand
- */
 package Utils
 
 import (

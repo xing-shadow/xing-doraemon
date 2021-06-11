@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/13 16:33
- * @Author : wangyl
- * @File : Alert.go
- * @Software: GoLand
- */
 package AlertService
 
 import (
@@ -14,17 +8,17 @@ import (
 
 func GetAlertList(req view.GetAlertsReq) (resp view.GetAlertResp, err error) {
 	var alerts []db.Alert
-	var page, pageSize, offset uint
+	var page, pageSize, offset int
 	var count int
 	if req.Page <= 0 {
 		page = 1
 	} else {
-		page = req.Page
+		page = int(req.Page)
 	}
 	if req.PageSize <= 0 {
 		pageSize = 10
 	} else {
-		pageSize = req.PageSize
+		pageSize = int(req.PageSize)
 	}
 	offset = (page - 1) * pageSize
 	err = opt.DB.Where("status=? and confirmed_at is null", 2).
@@ -39,6 +33,7 @@ func GetAlertList(req view.GetAlertsReq) (resp view.GetAlertResp, err error) {
 	}
 	resp.Total = count
 	resp.CurrentPage = int(page)
+	resp.PageSize = pageSize
 	for _, alert := range alerts {
 		resp.Alerts = append(resp.Alerts, view.Alert{
 			ID:       alert.ID,

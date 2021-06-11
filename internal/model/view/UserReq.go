@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/13 17:33
- * @Author : wangyl
- * @File : UserReq.go
- * @Software: GoLand
- */
 package view
 
 type LoginReq struct {
@@ -12,7 +6,8 @@ type LoginReq struct {
 }
 
 type UserListReq struct {
-	PaginationRequest
+	Page     uint `json:"page"`
+	PageSize uint `json:"page_size"`
 }
 
 type UserCreateReq struct {

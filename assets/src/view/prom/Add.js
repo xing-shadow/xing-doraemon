@@ -1,6 +1,6 @@
 import React, { Component,Fragment } from 'react';
 import {Button, Form,Input,message} from 'antd';
-import {GetProm,UpdataProm,AddProm} from '@/api/index';
+import {GetProm,UpdateProm,AddProm} from '../../api/prom';
 import PropTypes from 'prop-types';
 
 const layout = {

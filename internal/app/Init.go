@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/19 17:00
- * @Author : wangyl
- * @File : Init.go
- * @Software: GoLand
- */
 package app
 
 import (

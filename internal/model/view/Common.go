@@ -1,11 +1,7 @@
 package view
 
-type PaginationRequest struct {
-	Page     uint `query:"page"`
-	PageSize uint `query:"page_size"`
-}
-
-type PaginationResp struct {
+type Pagination struct {
 	Total       int `json:"total"`
+	PageSize    int `query:"page_size"`
 	CurrentPage int `json:"current_page"`
 }

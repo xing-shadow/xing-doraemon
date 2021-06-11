@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/22 16:18
- * @Author : wangyl
- * @File : PromHandle.go
- * @Software: GoLand
- */
 package Prom
 
 import (
@@ -18,7 +12,7 @@ import (
 // @Param page query string true "页序号"
 // @Param page_size query string true "页大小"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [get]
+// @Router /api/v1/proms [get]
 func GetPromsPagination(ctx *Resp.Context) {
 	var param view.GetProms
 	err := ctx.BindParam(&param)
@@ -40,7 +34,7 @@ func GetPromsPagination(ctx *Resp.Context) {
 // @Produce  json
 // @Param Id query string true "页序号"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/promId [get]
+// @Router /api/v1/prom [get]
 func GetProm(ctx *Resp.Context) {
 	var param view.GetProm
 	err := ctx.BindParam(&param)
@@ -77,7 +71,7 @@ func GetPromAllName(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.CreateProm true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [post]
+// @Router /api/v1/prom/add [post]
 func CreateProm(ctx *Resp.Context) {
 	var param view.CreateProm
 	err := ctx.BindParam(&param)
@@ -98,7 +92,7 @@ func CreateProm(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.ModifyProm true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [put]
+// @Router /api/v1/prom/update [post]
 func ModifyProm(ctx *Resp.Context) {
 	var param view.ModifyProm
 	err := ctx.BindParam(&param)
@@ -119,7 +113,7 @@ func ModifyProm(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.DeleteProm true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/prom [delete]
+// @Router /api/v1/prom/delete [post]
 func DeleteProm(ctx *Resp.Context) {
 	var param view.DeleteProm
 	err := ctx.BindParam(&param)

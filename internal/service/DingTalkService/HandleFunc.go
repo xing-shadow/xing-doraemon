@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/12 16:45
- * @Author : wangyl
- * @File : HandleFunc.go
- * @Software: GoLand
- */
 package DingTalkService
 
 import (

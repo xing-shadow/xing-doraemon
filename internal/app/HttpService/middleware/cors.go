@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/16 10:43
- * @Author : wangyl
- * @File : cors.go
- * @Software: GoLand
- */
 package middleware
 
 import (

@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/23 14:50
- * @Author : wangyl
- * @File : Storage.go
- * @Software: GoLand
- */
 package RuleEngine
 
 import (

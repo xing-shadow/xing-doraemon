@@ -1,14 +1,8 @@
-/*
- * @Time : 2020/10/22 14:47
- * @Author : wangyl
- * @File : PlanResp.go
- * @Software: GoLand
- */
 package view
 
 type PlanList struct {
-	PaginationResp
-	PlanList []PlanItem `json:"plan_list"`
+	Pagination `json:"pagination"`
+	PlanList   []PlanItem `json:"list"`
 }
 
 type PlanItem struct {

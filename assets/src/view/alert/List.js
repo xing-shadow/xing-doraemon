@@ -1,6 +1,6 @@
 import React, { Component ,Fragment} from 'react';
 import {message, Table,Button,Pagination} from 'antd';
-import {GetAlerts,ConfirmAlert} from '@/api/index';
+import {GetAlertList,ConfirmAlert} from '../../api/alert';
 class AlertList extends Component {
     constructor(props) {
         super(props);
@@ -62,7 +62,7 @@ class AlertList extends Component {
                 page:this.state.current_page ? this.state.current_page: 1,
                 page_size:this.state.page_size,
             }
-            GetAlerts(req).then(res => {
+            GetAlertList(req).then(res => {
                 if (res.code === 0) {
                     if (res.data) {
                         if (res.data.alerts) {

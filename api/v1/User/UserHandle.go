@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/13 17:32
- * @Author : wangyl
- * @File : UserHandle.go
- * @Software: GoLand
- */
 package User
 
 import (
@@ -17,7 +11,7 @@ import (
 // @Produce  json
 // @Param body body view.LoginReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [post]
+// @Router /api/v1/login [post]
 func UserLogin(ctx *Resp.Context) {
 	var param view.LoginReq
 	err := ctx.BindJSON(&param)
@@ -90,7 +84,7 @@ func UserUpdate(ctx *Resp.Context) {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	err = UserService.UpdateUser(param)
+	err = UserService.UpdateUserPasswd(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return

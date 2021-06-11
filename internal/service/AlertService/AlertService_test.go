@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/12 14:43
- * @Author : wangyl
- * @File : AlertService_test.go
- * @Software: GoLand
- */
 package AlertService
 
 import (
@@ -11,7 +5,7 @@ import (
 	"github.com/panjf2000/ants/v2"
 	"testing"
 	"time"
-	"xing-doraemon/global"
+	"xing-doraemon/configs"
 	"xing-doraemon/internal/Invoker"
 	"xing-doraemon/internal/model/db"
 )
@@ -57,13 +51,14 @@ func TestConfirmAlertList(t *testing.T) {
 }
 
 func TestQueryAlert(t *testing.T) {
-	global.GetAlterGatewayConfig().Mysql.DBType = "mysql"
-	global.GetAlterGatewayConfig().Mysql.DBUser = "root"
-	global.GetAlterGatewayConfig().Mysql.DBPasswd = "123456"
-	global.GetAlterGatewayConfig().Mysql.DBTns = "localhost:3306"
-	global.GetAlterGatewayConfig().Mysql.DBName = "doraemon" //doraemon
-	global.GetAlterGatewayConfig().Mysql.DBLoc = "Asia%2FShanghai"
-	if err := Invoker.Init(); err != nil {
+	if err := Invoker.Init(configs.Mysql{
+		DBType:   "mysql",
+		DBUser:   "root",
+		DBPasswd: "123456",
+		DBLoc:    "Asia%2FShanghai",
+		DBName:   "doraemon",
+		DBTns:    "localhost:3306",
+	}); err != nil {
 		t.Fatal(err)
 	}
 	opt.DB = Invoker.MysqlInvoker

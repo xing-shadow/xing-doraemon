@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/23 15:57
- * @Author : wangyl
- * @File : AlertHandle.go
- * @Software: GoLand
- */
 package AlertService
 
 import (

@@ -1,14 +1,8 @@
-/*
- * @Time : 2020/11/13 16:30
- * @Author : wangyl
- * @File : AlertResp.go
- * @Software: GoLand
- */
 package view
 
 type GetAlertResp struct {
-	PaginationResp
-	Alerts Alerts `json:"alerts"`
+	Pagination `json:"pagination"`
+	Alerts     Alerts `json:"list"`
 }
 
 type Alerts []Alert

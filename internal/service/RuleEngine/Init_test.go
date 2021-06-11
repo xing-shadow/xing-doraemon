@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/23 17:09
- * @Author : wangyl
- * @File : Init_test.go
- * @Software: GoLand
- */
 package RuleEngine
 
 import (

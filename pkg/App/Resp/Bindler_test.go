@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/20 16:38
- * @Author : wangyl
- * @File : Bindler_test.go
- * @Software: GoLand
- */
 package Resp
 
 import (

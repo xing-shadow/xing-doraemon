@@ -1,15 +1,10 @@
-/*
- * @Time : 2020/10/22 15:45
- * @Author : wangyl
- * @File : PromReq.go
- * @Software: GoLand
- */
 package view
 
 type GetProms struct {
-	PaginationRequest
-	Name string `query:"name"`
-	Url  string `query:"url"`
+	Page     uint   `json:"page"`
+	PageSize uint   `json:"page_size"`
+	Name     string `query:"name"`
+	Url      string `query:"url"`
 }
 
 type GetProm struct {

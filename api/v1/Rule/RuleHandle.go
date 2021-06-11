@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/19 17:09
- * @Author : wangyl
- * @File : RuleHandle.go
- * @Software: GoLand
- */
 package Rule
 
 import (
@@ -17,7 +11,7 @@ import (
 // @Produce  json
 // @Param id query string true "序号"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/ruleId [get]
+// @Router /api/v1/rule [get]
 func GetRule(ctx *Resp.Context) {
 	var param view.GetRule
 	err := ctx.BindParam(&param)
@@ -43,10 +37,10 @@ func GetRule(ctx *Resp.Context) {
 // @Param page query string true "序号"
 // @Param page_size query string true "序号"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [get]
+// @Router /api/v1/rules [get]
 func GetRulePagination(ctx *Resp.Context) {
 	var param view.GetRulesReq
-	err := ctx.BindParam(&param.PaginationRequest)
+	err := ctx.BindParam(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -64,7 +58,7 @@ func GetRulePagination(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.CreateRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [post]
+// @Router /api/v1/rule/add [post]
 func CreateRule(ctx *Resp.Context) {
 	var param view.CreateRuleReq
 	err := ctx.BindParam(&param)
@@ -85,7 +79,7 @@ func CreateRule(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.ModifyRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [put]
+// @Router /api/v1/rule/update [post]
 func ModifyRule(ctx *Resp.Context) {
 	var param view.ModifyRuleReq
 	err := ctx.BindParam(&param)
@@ -107,7 +101,7 @@ func ModifyRule(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.DeleteRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/rule [delete]
+// @Router /api/v1/rule/delete [post]
 func DeleteRule(ctx *Resp.Context) {
 	var param view.DeleteRuleReq
 	err := ctx.BindParam(&param)

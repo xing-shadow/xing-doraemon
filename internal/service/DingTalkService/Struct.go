@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/12 16:48
- * @Author : wangyl
- * @File : Struct.go
- * @Software: GoLand
- */
 package DingTalkService
 
 type DingTalk struct {

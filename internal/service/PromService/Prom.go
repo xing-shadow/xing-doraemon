@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/10/22 15:53
- * @Author : wangyl
- * @File : Prom.go
- * @Software: GoLand
- */
 package PromService
 
 import (
@@ -29,27 +23,24 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 	}
 	offset = (page - 1) * pageSize
 	if req.Name != "" && req.Url != "" {
-		err = opt.DB.Where("name LIKE ? AND url LIKE ? ",
+		err = opt.DB.Select("id, name, url").Where("name LIKE ? AND url LIKE ? ",
 			"%"+req.Name+"%",
-			"%"+req.Url+"%").Offset(offset).Limit(pageSize).Find(&proms).Error
+			"%"+req.Url+"%").Count(&count).Offset(offset).Limit(pageSize).Find(&proms).Error
 	} else if req.Name != "" && req.Url == "" {
-		err = opt.DB.Where("name LIKE ?",
-			"%"+req.Name+"%").Offset(offset).Limit(pageSize).Find(&proms).Error
+		err = opt.DB.Select("id, name, url").Where("name LIKE ?",
+			"%"+req.Name+"%").Count(&count).Offset(offset).Limit(pageSize).Find(&proms).Error
 	} else if req.Name == "" && req.Url != "" {
-		err = opt.DB.Where("url LIKE ? ",
-			"%"+req.Url+"%").Offset(offset).Limit(pageSize).Find(&proms).Error
+		err = opt.DB.Select("id, name, url").Where("url LIKE ? ",
+			"%"+req.Url+"%").Count(&count).Offset(offset).Limit(pageSize).Find(&proms).Error
 	} else {
-		err = opt.DB.Offset(offset).Limit(pageSize).Find(&proms).Error
+		err = opt.DB.Select("id, name, url").Offset(offset).Count(&count).Limit(pageSize).Find(&proms).Error
 	}
-	if err != nil {
-		return
-	}
-	err = opt.DB.Model(&db.Prom{}).Count(&count).Error
 	if err != nil {
 		return
 	}
 	resp.CurrentPage = page
 	resp.Total = count
+	resp.PageSize = pageSize
 	for _, prom := range proms {
 		resp.PromList = append(resp.PromList, view.PromItem{
 			ID:   prom.ID,
@@ -63,7 +54,7 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 func GetProm(req view.GetProm) (resp view.PromItem, err error) {
 	var prom db.Prom
 
-	err = opt.DB.Where("id=?", req.ID).First(&prom).Error
+	err = opt.DB.Select("id, name, url").Where("id=?", req.ID).First(&prom).Error
 	if err != nil {
 		return
 	}
@@ -74,10 +65,8 @@ func GetProm(req view.GetProm) (resp view.PromItem, err error) {
 }
 
 func GetPromAllName() (resp []string, err error) {
-	var results = []struct {
-		Name string `gorm:"column:name;"`
-	}{}
-	err = opt.DB.Table(db.Prom{}.TableName()).Select("name").Where("deleted_at is NULL").Find(&results).Error
+	var results []db.Prom
+	err = opt.DB.Select("name").Find(&results).Error
 	if err != nil {
 		return
 	}
@@ -89,24 +78,23 @@ func GetPromAllName() (resp []string, err error) {
 
 func CreateProms(req view.CreateProm) (err error) {
 	var prom db.Prom
-	err = opt.DB.Where("name=? and url=?", req.Name, req.Url).First(&prom).Error
-	if err != nil {
-		if !gorm.IsRecordNotFoundError(err) {
-			return err
-		}
-	} else {
-		return errors.New("this prom exist")
+	err = opt.DB.Where("name=?", req.Name).First(&prom).Error
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		return
 	}
-	err = opt.DB.Create(&db.Prom{
-		Name: req.Name,
-		Url:  req.Url,
-	}).Error
+	if prom.ID > 0 {
+		err = errors.New("this prom exist")
+		return
+	}
+	prom.Name = req.Name
+	prom.Url = req.Url
+	err = opt.DB.Save(&prom).Error
 	return
 }
 
 func ModifyProm(req view.ModifyProm) (err error) {
 	var prom db.Prom
-	err = opt.DB.Where("id=?", req.ID).First(&prom).Error
+	err = opt.DB.Select("id").Where("id=?", req.ID).First(&prom).Error
 	if err != nil {
 		return err
 	}
@@ -122,7 +110,8 @@ func DeleteProm(req view.DeleteProm) (err error) {
 	err = opt.DB.Where("id = ?", req.ID).Delete(&prom).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return nil
+			err = errors.New("该记录不存在")
+			return
 		}
 		return err
 	}

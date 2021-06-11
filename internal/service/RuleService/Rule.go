@@ -55,6 +55,7 @@ func GetPaginationRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 	}
 	resp.Total = count
 	resp.CurrentPage = page
+	resp.PageSize = pageSize
 	for _, rule := range rules {
 		var rule = view.RuleItem{
 			Id:          rule.ID,

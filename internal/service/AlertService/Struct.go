@@ -1,9 +1,3 @@
-/*
- * @Time : 2020/11/5 16:05
- * @Author : wangyl
- * @File : Struct.go
- * @Software: GoLand
- */
 package AlertService
 
 import (

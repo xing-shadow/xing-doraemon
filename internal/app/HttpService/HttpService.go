@@ -77,11 +77,11 @@ func Init(cfg configs.App) error {
 	}
 	//rules
 	{
-		api.GET("/ruleId", Resp.Handle(Rule.GetRule))
-		api.GET("/rule", Resp.Handle(Rule.GetRulePagination))
-		api.POST("/rule", Resp.Handle(Rule.CreateRule))
-		api.PUT("/rule", Resp.Handle(Rule.ModifyRule))
-		api.DELETE("/rule", Resp.Handle(Rule.DeleteRule))
+		api.GET("/rule", Resp.Handle(Rule.GetRule))
+		api.GET("/rules", Resp.Handle(Rule.GetRulePagination))
+		api.POST("/rule/add", Resp.Handle(Rule.CreateRule))
+		api.POST("/rule/update", Resp.Handle(Rule.ModifyRule))
+		api.POST("/rule/list", Resp.Handle(Rule.DeleteRule))
 	}
 	//alerts
 	{
@@ -91,24 +91,22 @@ func Init(cfg configs.App) error {
 	}
 	//plans
 	{
-		api.GET("/planId", Resp.Handle(Plan.GetPlan))
+		api.GET("/plan", Resp.Handle(Plan.GetPlan))
 		api.GET("/plan/allName", Resp.Handle(Plan.GetPlanAllName))
-		api.GET("/plan", Resp.Handle(Plan.GetPlanPagination))
-		api.POST("/plan", Resp.Handle(Plan.CreatePlan))
-		//TODO
-		//api.GET("/plan/:planId/rules")
-		api.PUT("/plan", Resp.Handle(Plan.ModifyPlan))
-		api.DELETE("/plan", Resp.Handle(Plan.DeletePlan))
+		api.GET("/plans", Resp.Handle(Plan.GetPlanPagination))
+		api.POST("/plan/add", Resp.Handle(Plan.CreatePlan))
+		api.POST("/plan/update", Resp.Handle(Plan.ModifyPlan))
+		api.POST("/plan/delete", Resp.Handle(Plan.DeletePlan))
 
 	}
 	//proms
 	{
-		api.GET("/promId", Resp.Handle(Prom.GetProm))
+		api.GET("/prom", Resp.Handle(Prom.GetProm))
 		api.GET("/prom/allName", Resp.Handle(Prom.GetPromAllName))
-		api.GET("/prom", Resp.Handle(Prom.GetPromsPagination))
-		api.POST("/prom", Resp.Handle(Prom.CreateProm))
-		api.PUT("/prom", Resp.Handle(Prom.ModifyProm))
-		api.DELETE("/prom", Resp.Handle(Prom.DeleteProm))
+		api.GET("/proms", Resp.Handle(Prom.GetPromsPagination))
+		api.POST("/prom/add", Resp.Handle(Prom.CreateProm))
+		api.POST("/prom/update", Resp.Handle(Prom.ModifyProm))
+		api.POST("/prom/delete", Resp.Handle(Prom.DeleteProm))
 	}
 	service := http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Httpport),
