@@ -2,6 +2,7 @@ package PlanService
 
 import (
 	"errors"
+
 	"github.com/jinzhu/gorm"
 	"xing-doraemon/internal/model/db"
 	"xing-doraemon/internal/model/view"
@@ -9,26 +10,28 @@ import (
 
 func GetPlan(req view.GetPlan) (resp view.PlanItem, err error) {
 	var plan db.Plan
-	err = opt.DB.Select("id, name, expression, start_time, end_time, period").Where("id=?", req.Id).First(&plan).Error
-	if err != nil {
+	err = opt.DB.Where("id=?", req.Id).First(&plan).Error
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		return
+	}
+	if plan.ID <= 0 {
+		err = errors.New("改告警计划不存在")
 		return
 	}
 	resp = view.PlanItem{
-		Id:         plan.ID,
-		Name:       plan.Name,
-		Expression: plan.Expression,
-		StartTime:  plan.StartTime,
-		EndTime:    plan.EndTime,
-		Period:     plan.Period,
+		Id:        plan.ID,
+		Name:      plan.Name,
+		StartTime: plan.StartTime,
+		EndTime:   plan.EndTime,
+		Method:    plan.Method,
+		Url:       plan.Url,
 	}
 	return
 }
 
 func GetPlanAllName() (resp []string, err error) {
-	var results = []struct {
-		Name string `gorm:"column:name;"`
-	}{}
-	err = opt.DB.Table(db.Plan{}.TableName()).Select("name").Where("deleted_at is NULL").Find(&results).Error
+	var results []db.Plan
+	err = opt.DB.Select("name").Find(&results).Error
 	if err != nil {
 		return
 	}
@@ -53,7 +56,7 @@ func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 		page = int(req.Page)
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Offset(offset).Limit(pageSize).Find(&plans).Error
+	err = opt.DB.Select("id, name, start_time, end_time, method, url").Offset(offset).Limit(pageSize).Find(&plans).Error
 	if err != nil {
 		return view.PlanList{}, err
 	}
@@ -63,12 +66,12 @@ func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 	}
 	for _, plan := range plans {
 		resp.PlanList = append(resp.PlanList, view.PlanItem{
-			Id:         plan.ID,
-			Name:       plan.Name,
-			Expression: plan.Expression,
-			StartTime:  plan.StartTime,
-			EndTime:    plan.EndTime,
-			Period:     plan.Period,
+			Id:        plan.ID,
+			Name:      plan.Name,
+			StartTime: plan.StartTime,
+			EndTime:   plan.EndTime,
+			Method:    plan.Method,
+			Url:       plan.Url,
 		})
 	}
 	resp.CurrentPage = page
@@ -79,22 +82,14 @@ func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 
 func CreatePlan(req view.CreatePlanReq) (err error) {
 	var plan db.Plan
-	err = opt.DB.Where("start_time=? and end_time=? and period=? and expression=?", req.StartTime, req.EndTime, req.Period, req.Expression).First(&plan).Error
-	if err != nil {
-		if !gorm.IsRecordNotFoundError(err) {
-			return
-		}
-	} else {
-		return errors.New("plan exist")
-	}
 	plan = db.Plan{
 		Name:      req.Name,
 		StartTime: req.StartTime,
 		EndTime:   req.EndTime,
-		Period:    req.Period,
-		User:      "no_user",
+		Method:    req.Method,
+		Url:       req.Url,
 	}
-	err = opt.DB.Create(&plan).Error
+	err = opt.DB.Save(&plan).Error
 	return
 }
 
@@ -103,24 +98,27 @@ func ModifyPlan(req view.ModifyPlanReq) (err error) {
 	err = opt.DB.Where("id=?", req.Id).First(&plan).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return errors.New("plan not exist")
+			err = errors.New("改告警计划不存在")
+			return
 		}
+		return
 	}
-	err = opt.DB.Model(&db.Plan{}).Where("id=?", req.Id).Updates(&db.Plan{
-		StartTime:  req.StartTime,
-		EndTime:    req.EndTime,
-		Period:     req.Period,
-		Expression: req.Expression,
-	}).Error
+	plan.Name = req.Name
+	plan.Url = req.Name
+	plan.StartTime = req.StartTime
+	plan.EndTime = req.EndTime
+	plan.Method = req.Method
+	plan.Url = req.Url
 	return err
 }
 
 func DeletePlan(req view.DeleteRuleReq) (err error) {
 	var plan db.Plan
-	err = opt.DB.Model(&db.Plan{}).Where("id = ?", req.ID).Delete(&plan).Error
+	err = opt.DB.Where("id = ?", req.ID).Delete(&plan).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return nil
+			err = errors.New("改告警计划不存在")
+			return
 		}
 		return err
 	}

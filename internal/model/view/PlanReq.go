@@ -12,20 +12,20 @@ type GetPlanList struct {
 }
 
 type CreatePlanReq struct {
-	Name       string `json:"name"`
-	StartTime  string `json:"start_time"`
-	EndTime    string `json:"end_time"`
-	Expression string `json:"expression"`
-	Period     int    `json:"period" binding:"required"`
+	Name      string `json:"name"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	Method    int    `json:"method"`
+	Url       string `json:"url"`
 }
 
 type ModifyPlanReq struct {
-	Id         uint   `json:"id" binding:"required"`
-	Name       string `json:"name"`
-	StartTime  string `json:"start_time"`
-	EndTime    string `json:"end_time"`
-	Expression string `json:"expression"`
-	Period     int    `json:"period"`
+	Id        uint   `json:"id" binding:"required"`
+	Name      string `json:"name"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	Method    int    `json:"method"`
+	Url       string `json:"url"`
 }
 
 type DeletePlanReq struct {

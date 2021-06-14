@@ -1,21 +1,16 @@
-/*
-@Time : 2020/9/3 16:46
-@Author : wangyl
-@File : HttpService.go
-@Software: GoLand
-*/
 package HttpService
 
 import (
 	"fmt"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"io/fs"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"xing-doraemon/api/v1/Alert"
 	"xing-doraemon/api/v1/Plan"
 	"xing-doraemon/api/v1/Prom"
@@ -25,7 +20,7 @@ import (
 	"xing-doraemon/configs"
 	_ "xing-doraemon/docs"
 	"xing-doraemon/internal/app/HttpService/middleware"
-	UserService "xing-doraemon/internal/service/UserService"
+	"xing-doraemon/internal/service/UserService"
 	"xing-doraemon/pkg/App/Resp"
 )
 
@@ -81,7 +76,7 @@ func Init(cfg configs.App) error {
 		api.GET("/rules", Resp.Handle(Rule.GetRulePagination))
 		api.POST("/rule/add", Resp.Handle(Rule.CreateRule))
 		api.POST("/rule/update", Resp.Handle(Rule.ModifyRule))
-		api.POST("/rule/list", Resp.Handle(Rule.DeleteRule))
+		api.POST("/rule/delete", Resp.Handle(Rule.DeleteRule))
 	}
 	//alerts
 	{

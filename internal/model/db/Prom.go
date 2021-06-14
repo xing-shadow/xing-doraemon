@@ -1,17 +1,12 @@
-/*
-@Time : 2020/8/25 10:38
-@Author : wangyl
-@File : Prom.go
-@Software: GoLand
-*/
 package db
 
 import "github.com/jinzhu/gorm"
 
+//Prom Prometheus 地址
 type Prom struct {
 	gorm.Model
-	Name string `gorm:"size:1023,unique" json:"name"`
-	Url  string `gorm:"size:1023" json:"url"`
+	Name string `gorm:"size:1023,unique" json:"name"` //名称
+	Url  string `gorm:"size:1023" json:"url"`         //Prometheus地址
 }
 
 func (Prom) TableName() string {

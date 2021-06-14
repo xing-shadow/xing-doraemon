@@ -1,9 +1,3 @@
-/*
-@Time : 2020/9/3 16:45
-@Author : wangyl
-@File : Init.go
-@Software: GoLand
-*/
 package service
 
 import (

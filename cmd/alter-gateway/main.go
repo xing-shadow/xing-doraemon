@@ -1,9 +1,3 @@
-/*
-@Time : 2020/7/20 10:08
-@Author : wangyl
-@File : main.go
-@Software: GoLand
-*/
 package main
 
 import (

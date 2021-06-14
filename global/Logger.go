@@ -1,9 +1,3 @@
-/*
-@Time : 2020/8/24 18:17
-@Author : wangyl
-@File : Logger.go
-@Software: GoLand
-*/
 package global
 
 import (

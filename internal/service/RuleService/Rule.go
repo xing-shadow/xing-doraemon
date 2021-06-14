@@ -2,6 +2,7 @@ package RuleService
 
 import (
 	"fmt"
+
 	"github.com/jinzhu/gorm"
 	"xing-doraemon/global"
 	"xing-doraemon/internal/model/db"
@@ -43,7 +44,7 @@ func GetPaginationRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 		pageSize = int(req.PageSize)
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Find(&rules).Offset(offset).Limit(pageSize).Error
+	err = opt.DB.Select("id, expr, op, value, for, summary, description").Find(&rules).Offset(offset).Limit(pageSize).Error
 	if err != nil {
 		global.Log.Error("get rules from mysql fail:" + err.Error())
 		return

@@ -1,17 +1,12 @@
-/*
-@Time : 2020/9/3 16:33
-@Author : wangyl
-@File : Init.go
-@Software: GoLand
-*/
 package Invoker
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"strings"
 	"xing-doraemon/global"
 	mysqlDB "xing-doraemon/internal/model/db"
 	"xing-doraemon/pkg/Utils"
@@ -80,6 +75,7 @@ func ensureDatabase(errInfo error, dsn string, dbName string) (db *gorm.DB, err 
 			&mysqlDB.User{},
 			&mysqlDB.Plan{},
 		}
+		db.CreateTable()
 		db.SingularTable(true)
 		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(models...)
 		db.Create(&mysqlDB.User{

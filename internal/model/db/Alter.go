@@ -1,29 +1,25 @@
-/*
-@Time : 2020/8/25 10:37
-@Author : wangyl
-@File : Alter.go
-@Software: GoLand
-*/
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type Alert struct {
 	gorm.Model
-	Labels      string
-	Value       float64
-	Count       int
-	Status      int8
-	Summary     string
-	Description string
-	Instance    string
-	ConfirmedBy string
-	FiredAt     *time.Time
-	LastAt      *time.Time
-	ConfirmedAt *time.Time
+	Labels      string  //标签
+	Value       float64 //告警值
+	Status      int8    //告警状态 0:正常 1:挂起 2:触发
+	Summary     string  //告警简介
+	Description string  //描述
+	Instance    string  //节点
+	ConfirmedBy string  //确认人
+
+	FiredAt         *time.Time //第一次触发时间
+	ConfirmedAt     *time.Time //告警确认时间
+	ConfirmedBefore *time.Time //告警确认时长
+	ResolvedAt      *time.Time //告警解除时间
 
 	RuleId uint
 	Rule   Rule `gorm:"ForeignKey:RuleId"`

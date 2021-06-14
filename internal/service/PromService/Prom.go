@@ -2,6 +2,7 @@ package PromService
 
 import (
 	"errors"
+
 	"github.com/jinzhu/gorm"
 	"xing-doraemon/internal/model/db"
 	"xing-doraemon/internal/model/view"
@@ -78,14 +79,6 @@ func GetPromAllName() (resp []string, err error) {
 
 func CreateProms(req view.CreateProm) (err error) {
 	var prom db.Prom
-	err = opt.DB.Where("name=?", req.Name).First(&prom).Error
-	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return
-	}
-	if prom.ID > 0 {
-		err = errors.New("this prom exist")
-		return
-	}
 	prom.Name = req.Name
 	prom.Url = req.Url
 	err = opt.DB.Save(&prom).Error
@@ -94,14 +87,17 @@ func CreateProms(req view.CreateProm) (err error) {
 
 func ModifyProm(req view.ModifyProm) (err error) {
 	var prom db.Prom
-	err = opt.DB.Select("id").Where("id=?", req.ID).First(&prom).Error
+	err = opt.DB.Where("id=?", req.ID).First(&prom).Error
 	if err != nil {
-		return err
+		if gorm.IsRecordNotFoundError(err) {
+			err = errors.New("该数据源不存在")
+			return
+		}
+		return
 	}
-	err = opt.DB.Model(&db.Prom{}).Where("id=?", req.ID).Updates(&db.Prom{
-		Name: req.Name,
-		Url:  req.Url,
-	}).Error
+	prom.Name = req.Name
+	prom.Url = req.Url
+	err = opt.DB.Save(&prom).Error
 	return
 }
 
