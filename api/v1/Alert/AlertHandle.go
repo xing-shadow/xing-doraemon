@@ -2,7 +2,7 @@ package Alert
 
 import (
 	"net/http"
-	"xing-doraemon/internal/app/HttpService/middleware"
+	"xing-doraemon/internal/model/db"
 	"xing-doraemon/internal/model/view"
 	"xing-doraemon/internal/service/AlertService"
 	"xing-doraemon/pkg/App/Resp"
@@ -16,7 +16,7 @@ import (
 // @Router /api/v1/alerts [get]
 func GetAlerts(ctx *Resp.Context) {
 	var param view.GetAlertsReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -34,20 +34,16 @@ func GetAlerts(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.ConfirmAlertsReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/alerts/confirm [get]
+// @Router /api/v1/alerts/confirm [post]
 func ConfirmAlerts(ctx *Resp.Context) {
 	var param view.ConfirmAlertsReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-	userName, ok := middleware.GetUserName(ctx.Context)
-	if !ok {
-		ctx.ToResponse(Resp.MsgError, "not fount this user", ctx.WithStatus(http.StatusOK))
-		return
-	}
-	err = AlertService.ConfirmAlertList(userName, param)
+	u, _ := ctx.Get("user")
+	err = AlertService.ConfirmAlertList(u.(*db.User).Name, param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return

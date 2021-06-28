@@ -14,13 +14,9 @@ import (
 // @Router /api/v1/rule [get]
 func GetRule(ctx *Resp.Context) {
 	var param view.GetRule
-	err := ctx.BindParam(&param)
+	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
-		return
-	}
-	if param.Id <= 0 {
-		ctx.ToResponse(Resp.MsgError, "invalid params", ctx.WithStatus(http.StatusOK))
 		return
 	}
 	data, err := RuleService.GetRule(param)
@@ -40,7 +36,7 @@ func GetRule(ctx *Resp.Context) {
 // @Router /api/v1/rules [get]
 func GetRulePagination(ctx *Resp.Context) {
 	var param view.GetRulesReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -61,7 +57,7 @@ func GetRulePagination(ctx *Resp.Context) {
 // @Router /api/v1/rule/add [post]
 func CreateRule(ctx *Resp.Context) {
 	var param view.CreateRuleReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -82,12 +78,11 @@ func CreateRule(ctx *Resp.Context) {
 // @Router /api/v1/rule/update [post]
 func ModifyRule(ctx *Resp.Context) {
 	var param view.ModifyRuleReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
 	}
-
 	err = RuleService.ModifyRule(param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
@@ -104,7 +99,7 @@ func ModifyRule(ctx *Resp.Context) {
 // @Router /api/v1/rule/delete [post]
 func DeleteRule(ctx *Resp.Context) {
 	var param view.DeleteRuleReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return

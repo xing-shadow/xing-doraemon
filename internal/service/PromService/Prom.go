@@ -23,19 +23,7 @@ func GetPromPagination(req view.GetProms) (resp view.PromList, err error) {
 		pageSize = int(req.PageSize)
 	}
 	offset = (page - 1) * pageSize
-	if req.Name != "" && req.Url != "" {
-		err = opt.DB.Select("id, name, url").Where("name LIKE ? AND url LIKE ? ",
-			"%"+req.Name+"%",
-			"%"+req.Url+"%").Count(&count).Offset(offset).Limit(pageSize).Find(&proms).Error
-	} else if req.Name != "" && req.Url == "" {
-		err = opt.DB.Select("id, name, url").Where("name LIKE ?",
-			"%"+req.Name+"%").Count(&count).Offset(offset).Limit(pageSize).Find(&proms).Error
-	} else if req.Name == "" && req.Url != "" {
-		err = opt.DB.Select("id, name, url").Where("url LIKE ? ",
-			"%"+req.Url+"%").Count(&count).Offset(offset).Limit(pageSize).Find(&proms).Error
-	} else {
-		err = opt.DB.Select("id, name, url").Offset(offset).Count(&count).Limit(pageSize).Find(&proms).Error
-	}
+	err = opt.DB.Table(db.Prom{}.TableName()).Select("id, name, url").Offset(offset).Count(&count).Limit(pageSize).Find(&proms).Error
 	if err != nil {
 		return
 	}

@@ -1,10 +1,25 @@
-package DingTalkService
+package DingTalk
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"xing-doraemon/global"
+	"xing-doraemon/internal/service/AlertService/Sender"
 )
+
+type DingTalkSender struct {
+}
+
+func (d DingTalkSender) SendAlert(data Sender.ReadyToSend) {
+
+}
+
+func (d DingTalkSender) SendRecovery(data Sender.ReadyToSend) {
+
+}
 
 func HandleDingTalkInfoFunc(args interface{}) {
 	data, ok := args.(DingTalkInfo)
@@ -28,10 +43,20 @@ func HandleDingTalkInfoFunc(args interface{}) {
 		global.Log.Error("HandleDingTalkInfoFunc json.Marshal fail:" + err.Error())
 		return
 	}
-	resp, err := opt.API.R().SetHeader("Content-Type", "application/json").SetBody(msgByte).Post(opt.PushAddr)
+	req, err := http.NewRequest(http.MethodPost, "", bytes.NewReader(msgByte))
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		global.Log.Warn("send ding talk fail:" + err.Error())
 	} else {
-		fmt.Println(resp)
+		fmt.Println(string(body))
 	}
 }

@@ -5,7 +5,6 @@ import (
 )
 
 var opt Option
-var alertSrv *AlertService
 
 type Option struct {
 	DB *gorm.DB
@@ -13,10 +12,6 @@ type Option struct {
 
 func Init(option Option) (err error) {
 	opt = option
-	alertSrv, err = NewAlertService()
+	//go alertInspection()
 	return
-}
-
-func PushNotify(i interface{}) error {
-	return alertSrv.Invoker(i)
 }

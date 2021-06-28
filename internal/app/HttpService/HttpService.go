@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -20,7 +19,6 @@ import (
 	"xing-doraemon/configs"
 	_ "xing-doraemon/docs"
 	"xing-doraemon/internal/app/HttpService/middleware"
-	"xing-doraemon/internal/service/UserService"
 	"xing-doraemon/pkg/App/Resp"
 )
 
@@ -29,10 +27,10 @@ func Init(cfg configs.App) error {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// session init
-	router.Use(sessions.Sessions(UserService.SessionName, UserService.NewSessionStore()))
+	//router.Use(sessions.Sessions(UserService.SessionName, UserService.NewSessionStore()))
+	//LoginMiddleware := middleware.LoginAuth("/antd/login").Func()
 
 	router.Use(middleware.Cors())
-	//LoginMiddleware := middleware.LoginAuth("/antd/login").Func()
 
 	// static file
 	router.GET("/", func(c *gin.Context) {
@@ -57,15 +55,10 @@ func Init(cfg configs.App) error {
 	})
 
 	api := router.Group("/api/v1/")
-	/*
-		判断用户是否登录，并设置信息
-	*/
 	api.POST("/user/login", Resp.Handle(User.UserLogin))
-	//api.Use(LoginMiddleware)
-
 	//user
 	{
-		api.POST("/user/list", Resp.Handle(User.UserList))
+		api.GET("/user/list", Resp.Handle(User.UserList))
 		api.POST("/user/create", Resp.Handle(User.UserCreate))
 		api.POST("/user/update", Resp.Handle(User.UserUpdate))
 		api.POST("/user/delete", Resp.Handle(User.UserDelete))

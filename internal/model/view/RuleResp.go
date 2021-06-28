@@ -10,7 +10,7 @@ type RuleItem struct {
 	Expr        string `json:"expr"`
 	Op          string `json:"op"`
 	Value       string `json:"value"`
-	For         int    `json:"for"`
+	Duration    int    `json:"duration"`
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
 

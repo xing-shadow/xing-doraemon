@@ -15,7 +15,7 @@ func GetPlan(req view.GetPlan) (resp view.PlanItem, err error) {
 		return
 	}
 	if plan.ID <= 0 {
-		err = errors.New("改告警计划不存在")
+		err = errors.New("记录不存在")
 		return
 	}
 	resp = view.PlanItem{
@@ -56,11 +56,7 @@ func GetPlanPagination(req view.GetPlanList) (resp view.PlanList, err error) {
 		page = int(req.Page)
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Select("id, name, start_time, end_time, method, url").Offset(offset).Limit(pageSize).Find(&plans).Error
-	if err != nil {
-		return view.PlanList{}, err
-	}
-	err = opt.DB.Model(&db.Plan{}).Count(&count).Error
+	err = opt.DB.Table(db.Plan{}.TableName()).Select("id, name, start_time, end_time, method, url").Count(&count).Offset(offset).Limit(pageSize).Find(&plans).Error
 	if err != nil {
 		return view.PlanList{}, err
 	}
@@ -98,7 +94,7 @@ func ModifyPlan(req view.ModifyPlanReq) (err error) {
 	err = opt.DB.Where("id=?", req.Id).First(&plan).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			err = errors.New("改告警计划不存在")
+			err = errors.New("该告警计划不存在")
 			return
 		}
 		return
@@ -117,7 +113,7 @@ func DeletePlan(req view.DeleteRuleReq) (err error) {
 	err = opt.DB.Where("id = ?", req.ID).Delete(&plan).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			err = errors.New("改告警计划不存在")
+			err = errors.New("该告警计划不存在")
 			return
 		}
 		return err

@@ -1,10 +1,8 @@
 package view
 
 type GetProms struct {
-	Page     uint   `json:"page"`
-	PageSize uint   `json:"page_size"`
-	Name     string `query:"name"`
-	Url      string `query:"url"`
+	Page     uint `query:"page"`
+	PageSize uint `query:"page_size"`
 }
 
 type GetProm struct {

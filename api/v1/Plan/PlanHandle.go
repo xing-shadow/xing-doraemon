@@ -14,7 +14,7 @@ import (
 // @Router /api/v1/plan [get]
 func GetPlan(ctx *Resp.Context) {
 	var param view.GetPlan
-	err := ctx.BindParam(&param)
+	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -50,7 +50,7 @@ func GetPlanAllName(ctx *Resp.Context) {
 // @Router /api/v1/plans [get]
 func GetPlanPagination(ctx *Resp.Context) {
 	var param view.GetPlanList
-	err := ctx.BindParam(&param)
+	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -71,7 +71,7 @@ func GetPlanPagination(ctx *Resp.Context) {
 // @Router /api/v1/plan/add [post]
 func CreatePlan(ctx *Resp.Context) {
 	var param view.CreatePlanReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -92,7 +92,7 @@ func CreatePlan(ctx *Resp.Context) {
 // @Router /api/v1/plan/update [post]
 func ModifyPlan(ctx *Resp.Context) {
 	var param view.ModifyPlanReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -110,10 +110,10 @@ func ModifyPlan(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.DeleteRuleReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/plan/delete [delete]
+// @Router /api/v1/plan/delete [post]
 func DeletePlan(ctx *Resp.Context) {
 	var param view.DeleteRuleReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return

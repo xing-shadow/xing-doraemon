@@ -50,7 +50,7 @@ type Mysql struct {
 	DBLoc     string `json:"DBLoc" yaml:"DBLoc"`
 	DBConnTTL int    `json:"DBConnTTL" yaml:"DBConnTTL"`
 	DBName    string `json:"DBName" yaml:"DBName"`
-	DBTns     string `json:"DBTns" yaml:"DBTns"`
+	DBDns     string `json:"DBDns" yaml:"DBDns"`
 }
 
 type Send struct {

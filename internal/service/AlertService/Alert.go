@@ -1,6 +1,8 @@
 package AlertService
 
 import (
+	"github.com/pkg/errors"
+	"github.com/prometheus/prometheus/rules"
 	"time"
 	"xing-doraemon/internal/model/db"
 	"xing-doraemon/internal/model/view"
@@ -21,37 +23,79 @@ func GetAlertList(req view.GetAlertsReq) (resp view.GetAlertResp, err error) {
 		pageSize = int(req.PageSize)
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Where("status=? and confirmed_at is null", 2).
-		Or("status=? and confirmed_at is not null and ? > confirmed_at", 2, time.Now().Add(-2*time.Hour)).
-		Offset(offset).Limit(pageSize).Find(&alerts).Error
-	if err != nil {
-		return view.GetAlertResp{}, err
-	}
-	err = opt.DB.Table(db.Alert{}.TableName()).Where("status=? and confirmed_at is null", 2).Count(&count).Error
-	if err != nil {
-		return view.GetAlertResp{}, err
+	if req.State != "" {
+		if req.StartTime != "" {
+			if req.EndTime != "" {
+				err = opt.DB.Table(db.Alert{}.TableName()).Where("state=? AND fired_at < ? AND fired_at > ?", req.State, req.EndTime, req.StartTime).Count(&count).Offset(offset).Limit(pageSize).Find(&alerts).Error
+				if err != nil {
+					return
+				}
+			} else {
+				err = opt.DB.Table(db.Alert{}.TableName()).Where("state=? AND fired_at < ?", req.State, req.EndTime).Count(&count).Offset(offset).Limit(pageSize).Find(&alerts).Error
+				if err != nil {
+					return
+				}
+			}
+		} else {
+			err = opt.DB.Table(db.Alert{}.TableName()).Where("status=?", req.State).Count(&count).Offset(offset).Limit(pageSize).Find(&alerts).Error
+			if err != nil {
+				return
+			}
+		}
+	} else {
+		err = opt.DB.Table(db.Alert{}.TableName()).Count(&count).Offset(offset).Limit(pageSize).Find(&alerts).Error
+		if err != nil {
+			return
+		}
 	}
 	resp.Total = count
 	resp.CurrentPage = int(page)
 	resp.PageSize = pageSize
 	for _, alert := range alerts {
-		resp.Alerts = append(resp.Alerts, view.Alert{
-			ID:       alert.ID,
-			Labels:   alert.Labels,
-			Value:    alert.Value,
-			Count:    alert.Count,
-			Summary:  alert.Summary,
-			Instance: alert.Instance,
-			FiredAt:  alert.FiredAt.Format(time.RFC3339),
+		resp.Alerts = append(resp.Alerts, view.AlertItem{
+			ID:              alert.ID,
+			RuleId:          alert.RuleId,
+			Labels:          alert.Labels,
+			Value:           alert.Value,
+			Status:          alert.State,
+			Summary:         alert.Summary,
+			Instance:        alert.Hostname,
+			Description:     alert.Description,
+			ConfirmedBy:     alert.ConfirmedBy,
+			FiredAt:         alert.FiredAt,
+			ConfirmedAt:     alert.ConfirmedAt,
+			ConfirmedBefore: alert.ConfirmedBefore,
+			ResolvedAt:      alert.ResolvedAt,
 		})
 	}
 	return
 }
 
 func ConfirmAlertList(userName string, req view.ConfirmAlertsReq) (err error) {
-	err = opt.DB.Model(&db.Alert{}).Where("id in (?)", req.AlertList).Updates(map[string]interface{}{
-		"confirmed_by": userName,
-		"confirmed_at": time.Now(),
-	}).Error
+	now := time.Now()
+	confirmedBefore := time.Now().Add(time.Duration(req.Duration) * time.Minute)
+	for i := 0; i < len(req.AlertList); i++ {
+		var alert db.Alert
+		tx := opt.DB.Begin()
+		err = tx.Select("rule_id,status").Where("id=?", req.AlertList[i]).First(&alert).Error
+		if err != nil {
+			tx.Rollback()
+			return errors.Wrap(err, "database query error")
+		} else {
+			if alert.State == int(rules.StateFiring) {
+				err = tx.Model(&db.Alert{}).Where("id=?", req.AlertList[i]).Updates(map[string]interface{}{
+					"status":           1,
+					"confirmed_by":     userName,
+					"confirmed_at":     &now,
+					"confirmed_before": &confirmedBefore,
+				}).Error
+				if err != nil {
+					tx.Rollback()
+					return errors.Wrap(err, "database update error")
+				}
+			}
+		}
+		tx.Commit()
+	}
 	return
 }

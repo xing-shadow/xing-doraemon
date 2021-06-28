@@ -1,20 +1,20 @@
 package db
 
 import (
-	"time"
-
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type Alert struct {
 	gorm.Model
-	Labels      string  //标签
-	Value       float64 //告警值
-	Status      int8    //告警状态 0:正常 1:挂起 2:触发
-	Summary     string  //告警简介
-	Description string  //描述
-	Instance    string  //节点
-	ConfirmedBy string  //确认人
+	Labels string  //标签
+	Value  float64 //告警值
+
+	State       int    //告警状态 0:正常 1:挂起 2:触发
+	Summary     string //告警简介
+	Description string //描述
+	Hostname    string //节点
+	ConfirmedBy string //确认人
 
 	FiredAt         *time.Time //第一次触发时间
 	ConfirmedAt     *time.Time //告警确认时间

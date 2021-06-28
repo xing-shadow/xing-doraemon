@@ -20,7 +20,7 @@ Session:
 Mysql:
   DBType: "mysql"
   DBName: "doraemon"
-  DBTns: "localhost:3306"
+  DBDns: "localhost:3306"
   DBUser: "root"
   DBPasswd: "123456"
   DBLoc: "Asia%2FShanghai"

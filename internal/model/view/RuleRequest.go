@@ -13,7 +13,7 @@ type CreateRuleReq struct {
 	Expr        string `json:"expr" bind:"required"`
 	Op          string `json:"op" bind:"required"`
 	Value       string `json:"value" bind:"required"`
-	For         int    `json:"for" bind:"required"` //持续时间，单位秒
+	Duration    int    `json:"duration" bind:"required"` //持续时间，单位秒
 	Summary     string `json:"summary" bind:"required"`
 	Description string `json:"description"`
 	PlanName    string `json:"plan_name" bind:"required"`
@@ -25,7 +25,7 @@ type ModifyRuleReq struct {
 	Expr        string `json:"expr" bind:"required"`
 	Op          string `json:"op" bind:"required"`
 	Value       string `json:"value" bind:"required"`
-	For         int    `json:"for"`
+	Duration    int    `json:"duration" bind:"required"`
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
 	PlanName    string `json:"plan_name" bind:"required"`

@@ -5,10 +5,8 @@ type GetPlan struct {
 }
 
 type GetPlanList struct {
-	StartTime uint `query:"start_time"`
-	EndTime   uint `query:"end_time"`
-	Page      uint `json:"page"`
-	PageSize  uint `json:"page_size"`
+	Page     uint `query:"page"`
+	PageSize uint `query:"page_size"`
 }
 
 type CreatePlanReq struct {

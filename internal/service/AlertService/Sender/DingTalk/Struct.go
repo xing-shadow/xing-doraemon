@@ -1,4 +1,4 @@
-package DingTalkService
+package DingTalk
 
 type DingTalk struct {
 	Type string       `json:"msgtype"`

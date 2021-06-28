@@ -1,135 +1,139 @@
 package AlertService
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	jsoniter "github.com/json-iterator/go"
+	"github.com/prometheus/prometheus/rules"
+	"runtime"
 	"time"
 	"xing-doraemon/global"
 	"xing-doraemon/internal/model/db"
-	"xing-doraemon/internal/service/DingTalkService"
-	"xing-doraemon/pkg/Utils"
+	"xing-doraemon/internal/model/view"
+	"xing-doraemon/internal/service/AlertService/Sender"
+	"xing-doraemon/pkg/xtime"
 )
 
-var (
-	defaultHandle AlertHandle
-)
-
-type AlertHandle interface {
-	HandleAlert(task interface{})
-}
-
-func RegisterAlertHandle(alertHandle AlertHandle) {
-	defaultHandle = alertHandle
-}
-
-func GetAlertHandle() AlertHandle {
-	if defaultHandle == nil {
-		return DefaultAlertHandle{}
-	}
-	return defaultHandle
-}
-
-type DefaultAlertHandle struct {
-}
-
-/*
-
- */
-func (pThis DefaultAlertHandle) HandleAlert(task interface{}) {
-	//TODO alert Handle
-	data, ok := task.([]byte)
-	if !ok {
-		return
-	}
-	var alerts []PromAlertItem
-	if err := json.Unmarshal(data, &alerts); err != nil {
-		global.Log.Error("HandleAlert json.Unmarshal fail:" + err.Error())
-		return
-	}
-	var dingTalkInfo DingTalkService.DingTalkInfo
-	if len(alerts) > 0 {
-		expr, err := GetExpression(uint(Utils.MustToInt(alerts[0].Annotations.RuleId)))
-		if err != nil {
-			global.Log.Error("HandleAlert GetExpression fail:" + err.Error())
-			return
+func HandleAlerts(alerts []view.Alert) {
+	defer func() {
+		if e := recover(); e != nil {
+			buf := make([]byte, 16384)
+			buf = buf[:runtime.Stack(buf, false)]
+			global.Log.Error(fmt.Sprintf("Panic in AlertsHandler:%v\n%s", e, buf))
 		}
-		dingTalkInfo.Title = alerts[0].Annotations.Summary
-		dingTalkInfo.Text = expr
+	}()
+	timeZero := xtime.ZeroTime()
+	for _, item := range alerts {
+		var alert db.Alert
+		err := opt.DB.Where("rule_id =? AND labels=? AND fired_at=?", item.Annotations.RuleId, item.Labels, &item.FiredAt).First(&alert).Error
+		if err == nil {
+			// alert has been triggered
+			if alert.State != int(rules.StateInactive) {
+				if item.State == int(rules.StateInactive) {
+					if err := recoverAlert(alert.ID, item); err != nil {
+						global.Log.Error("recoverAlert fail:" + err.Error())
+						continue
+					}
+				} else {
+					opt.DB.Model(&db.Alert{}).Where("rule_id =? AND labels=? AND fired_at=?", item.Annotations.RuleId, item.Labels, &item.FiredAt).Updates(map[string]interface{}{
+						"summary":     item.Annotations.Summary,
+						"description": item.Annotations.Description,
+						"value":       item.Value,
+					})
+				}
+			} else {
+				continue
+			}
+		} else if gorm.IsRecordNotFoundError(err) {
+			alert = db.Alert{
+				Labels:          item.Labels.String(),
+				Value:           item.Value,
+				State:           item.State,
+				Summary:         item.Annotations.Summary,
+				Description:     item.Annotations.Description,
+				Hostname:        item.Labels.Get("instance"),
+				FiredAt:         &item.FiredAt,
+				ConfirmedAt:     &timeZero,
+				ConfirmedBefore: &timeZero,
+				ResolvedAt:      &timeZero,
+				RuleId:          item.Annotations.RuleId,
+			}
+		}
 	}
-	for _, alert := range alerts {
-		labes, send, err := HandleOneAlert(alert)
+}
+
+func recoverAlert(id uint, alert view.Alert) error {
+	if id <= 0 {
+		return errors.New("Invalid Param ")
+	}
+	err := opt.DB.Model(&db.Alert{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"state":       rules.StateInactive,
+		"resolved_at": &alert.ResolvedAt,
+		"summary":     alert.Annotations.Summary,
+		"description": alert.Annotations.Description,
+		"value":       alert.Value,
+	}).Error
+	if err != nil {
+		return err
+	}
+	var rule db.Rule
+	err = opt.DB.Preload("Plan").Select("id").Where("id=?", alert.Annotations.RuleId).Find(&rule).Error
+	if err != nil {
+		return err
+	}
+	recoveryMutex.Lock()
+	if _, ok := recoverySend[rule.Plan.Method]; !ok {
+		recoverySend[rule.Plan.Method] = &Sender.ReadyToSend{
+			RulId: rule.ID,
+			Url:   rule.Plan.Url,
+		}
+	}
+	recoverySend[rule.Plan.Method].Alerts = append(recoverySend[rule.Plan.Method].Alerts, Sender.SendAlert{
+		Id:       id,
+		Value:    alert.Value,
+		Summary:  alert.Annotations.Summary,
+		Hostname: alert.Labels.Get("instance"),
+		Labels:   alert.Labels.String(),
+	})
+	recoveryMutex.Unlock()
+	return nil
+}
+
+func filterAlert(alerts map[uint][]db.Alert) (result map[int]*Sender.ReadyToSend) {
+	result = make(map[int]*Sender.ReadyToSend)
+	now := time.Now()
+	for key := range alerts {
+		var plan db.Plan
+		var rule db.Rule
+		err := opt.DB.Select("plan_id").Where("id = ?", key).Find(&rule).Error
 		if err != nil {
+			global.Log.Debug("filterAlert get rule fail:" + err.Error())
 			continue
 		}
-		if send {
-			dingTalkInfo.AlertList = append(dingTalkInfo.AlertList, DingTalkService.AlertItem{
-				Labels: labes,
-				Value:  alert.Value,
-			})
-		}
-	}
-	if err := DingTalkService.PushDingTalkInfo(dingTalkInfo); err != nil {
-		global.Log.Error("HandleAlert PushDingTalkInfo fail:" + err.Error())
-	}
-}
-
-func GetExpression(ruleID uint) (string, error) {
-	var rule db.Rule
-	err := opt.DB.Where("id=?", ruleID).Find(&rule).Error
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%s %s %s", rule.Expr, rule.Op, rule.Value), nil
-}
-
-func HandleOneAlert(oneAlert PromAlertItem) (labels string, send bool, err error) {
-	logger := global.Log
-	var alert db.Alert
-	labels, err = jsoniter.MarshalToString(oneAlert.Labels)
-	if err != nil {
-		logger.Error("HandleOneAlert json.Marshal Labels fail:" + err.Error())
-		return
-	}
-	err = opt.DB.Where("rule_id=? and labels=?", oneAlert.Annotations.RuleId, labels).Find(&alert).Error
-	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		logger.Error("HandleOneAlert Find db.Alert fail:" + err.Error())
-		return
-	}
-	if alert.ConfirmedBy == "" {
-		send = true
-	}
-	if alert.ConfirmedAt != nil {
-		if time.Now().Sub(*alert.ConfirmedAt) > 2*time.Hour {
-			send = true
-		}
-	}
-	if alert.ID > 0 {
-		count := alert.Count + 1
-		err := opt.DB.Model(&db.Alert{}).Where("id=?", alert.ID).Updates(map[string]interface{}{
-			"count":   count,
-			"last_at": alert.LastAt,
-		}).Error
+		err = opt.DB.Where("id =?", rule.PlanID).First(&plan).Error
 		if err != nil {
-			logger.Error("HandleOneAlert update count db.Alert fail:" + err.Error())
+			global.Log.Debug("filterAlert get plan fail:" + err.Error())
+			continue
 		}
-	} else {
-		alert = db.Alert{
-			Labels:      labels,
-			Value:       oneAlert.Value,
-			Count:       1,
-			Status:      oneAlert.State,
-			Summary:     oneAlert.Annotations.Summary,
-			Description: oneAlert.Annotations.Description,
-			Instance:    oneAlert.Labels["instance"],
-			FiredAt:     oneAlert.FiredAt,
-			LastAt:      oneAlert.LastSentAt,
-			RuleId:      uint(Utils.MustToInt(oneAlert.Annotations.RuleId)),
-		}
-		err = opt.DB.Create(&alert).Error
-		if err != nil {
-			logger.Error("HandleOneAlert update Create db.Alert fail:" + err.Error())
+		if plan.IsSend(now) {
+			result[plan.Method] = &Sender.ReadyToSend{
+				RulId: rule.ID,
+				Url:   plan.Url,
+			}
+			for _, item := range alerts[key] {
+				if item.ConfirmedBefore != nil {
+					if now.Before(*item.ConfirmedBefore) {
+						continue
+					}
+				}
+				result[plan.Method].Alerts = append(result[plan.Method].Alerts, Sender.SendAlert{
+					Id:       item.ID,
+					Value:    item.Value,
+					Summary:  item.Summary,
+					Hostname: item.Hostname,
+					Labels:   item.Labels,
+				})
+			}
 		}
 	}
 	return

@@ -7,7 +7,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"xing-doraemon/global"
 	mysqlDB "xing-doraemon/internal/model/db"
 	"xing-doraemon/pkg/Utils"
 )
@@ -20,7 +19,7 @@ func InitMysqlInvoker() (db *gorm.DB, err error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		mysqlCofig.DBUser,
 		mysqlCofig.DBPasswd,
-		mysqlCofig.DBTns,
+		mysqlCofig.DBDns,
 		mysqlCofig.DBName,
 		mysqlCofig.DBLoc)
 
@@ -68,6 +67,7 @@ func ensureDatabase(errInfo error, dsn string, dbName string) (db *gorm.DB, err 
 		if err != nil {
 			return nil, err
 		}
+		db.LogMode(true)
 		models := []interface{}{
 			&mysqlDB.Alert{},
 			&mysqlDB.Rule{},
@@ -82,9 +82,7 @@ func ensureDatabase(errInfo error, dsn string, dbName string) (db *gorm.DB, err 
 			Name:     "xing",
 			Password: Utils.Md5ToHex([]byte("123456")),
 		})
-		global.Log.Info("create tables ok")
 	}
-	global.Log.Debug("Initialize database connection: " + dsn)
 	return
 }
 

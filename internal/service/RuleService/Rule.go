@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
-	"xing-doraemon/global"
 	"xing-doraemon/internal/model/db"
 	"xing-doraemon/internal/model/view"
 )
@@ -20,7 +19,7 @@ func GetRule(req view.GetRule) (resp view.RuleItem, err error) {
 		Expr:        rule.Expr,
 		Op:          rule.Op,
 		Value:       rule.Value,
-		For:         rule.For,
+		Duration:    rule.Duration,
 		Summary:     rule.Summary,
 		Description: rule.Description,
 		PlanName:    rule.Plan.Name,
@@ -44,14 +43,8 @@ func GetPaginationRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 		pageSize = int(req.PageSize)
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Select("id, expr, op, value, for, summary, description").Find(&rules).Offset(offset).Limit(pageSize).Error
+	err = opt.DB.Table(db.Rule{}.TableName()).Select("id,expr,op,value,duration,summary,description").Count(&count).Offset(offset).Limit(pageSize).Find(&rules).Error
 	if err != nil {
-		global.Log.Error("get rules from mysql fail:" + err.Error())
-		return
-	}
-	err = opt.DB.Model(&db.Rule{}).Count(&count).Error
-	if err != nil {
-		global.Log.Error("get rules counts from mysql fail:" + err.Error())
 		return
 	}
 	resp.Total = count
@@ -63,7 +56,7 @@ func GetPaginationRule(req view.GetRulesReq) (resp view.RuleList, err error) {
 			Expr:        rule.Expr,
 			Op:          rule.Op,
 			Value:       rule.Value,
-			For:         rule.For,
+			Duration:    rule.Duration,
 			Summary:     rule.Summary,
 			Description: rule.Description,
 		}
@@ -104,11 +97,11 @@ func CreateRule(req view.CreateRuleReq) (err error) {
 		Expr:        req.Expr,
 		Op:          req.Op,
 		Value:       req.Value,
-		For:         req.For,
+		Duration:    req.Duration,
 		Summary:     req.Summary,
 		Description: req.Description,
 	}
-	err = opt.DB.Create(&rule).Error
+	err = opt.DB.Save(&rule).Error
 	return
 }
 
@@ -138,7 +131,7 @@ func ModifyRule(req view.ModifyRuleReq) (err error) {
 		Expr:        req.Expr,
 		Op:          req.Op,
 		Value:       req.Value,
-		For:         req.For,
+		Duration:    req.Duration,
 		Summary:     req.Summary,
 		Description: req.Description,
 	}).Error

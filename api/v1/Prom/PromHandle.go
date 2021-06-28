@@ -15,7 +15,7 @@ import (
 // @Router /api/v1/proms [get]
 func GetPromsPagination(ctx *Resp.Context) {
 	var param view.GetProms
-	err := ctx.BindParam(&param)
+	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -37,7 +37,7 @@ func GetPromsPagination(ctx *Resp.Context) {
 // @Router /api/v1/prom [get]
 func GetProm(ctx *Resp.Context) {
 	var param view.GetProm
-	err := ctx.BindParam(&param)
+	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -74,7 +74,7 @@ func GetPromAllName(ctx *Resp.Context) {
 // @Router /api/v1/prom/add [post]
 func CreateProm(ctx *Resp.Context) {
 	var param view.CreateProm
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -95,7 +95,7 @@ func CreateProm(ctx *Resp.Context) {
 // @Router /api/v1/prom/update [post]
 func ModifyProm(ctx *Resp.Context) {
 	var param view.ModifyProm
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -116,7 +116,7 @@ func ModifyProm(ctx *Resp.Context) {
 // @Router /api/v1/prom/delete [post]
 func DeleteProm(ctx *Resp.Context) {
 	var param view.DeleteProm
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return

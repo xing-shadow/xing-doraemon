@@ -58,7 +58,7 @@ func UserList(ctx *Resp.Context) {
 // @Router /api/v1/user/create [post]
 func UserCreate(ctx *Resp.Context) {
 	var param view.UserCreateReq
-	err := ctx.BindParam(&param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.ToResponse(Resp.MsgError, err.Error(), ctx.WithStatus(http.StatusOK))
 		return
@@ -76,7 +76,7 @@ func UserCreate(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.UserUpdateReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/user/update [put]
+// @Router /api/v1/user/update [post]
 func UserUpdate(ctx *Resp.Context) {
 	var param view.UserUpdateReq
 	err := ctx.BindJSON(&param)
@@ -97,7 +97,7 @@ func UserUpdate(ctx *Resp.Context) {
 // @Produce  json
 // @Param body body view.UserDeleteReq true "body"
 // @Success 200 {object} Resp.Response
-// @Router /api/v1/user/delete [delete]
+// @Router /api/v1/user/delete [post]
 func UserDelete(ctx *Resp.Context) {
 	var param view.UserDeleteReq
 	err := ctx.BindJSON(&param)

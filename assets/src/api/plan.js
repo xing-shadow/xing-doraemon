@@ -8,6 +8,14 @@ export function GetPlanList(params) {
     })
 }
 
+export function GetPlan(params) {
+    return httpClient({
+        method:'get',
+        url:"/api/v1/plan",
+        params:params
+    })
+}
+
 export function GetPlanAllName() {
     return httpClient({
         method:'get',
@@ -23,6 +31,13 @@ export function AddPlan(params) {
     })
 }
 
+export function UpdatePlan(params) {
+    return httpClient({
+        method:'post',
+        url:"/api/v1/plan/update",
+        data:params
+    })
+}
 
 
 export function DeletePlan(params) {

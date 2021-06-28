@@ -2,7 +2,6 @@ package RuleEngine
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	clienApi "github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
@@ -15,7 +14,9 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
+	"xing-doraemon/internal/model/view"
 	"xing-doraemon/internal/service/AlertService"
 )
 
@@ -97,25 +98,34 @@ func HTTPNotifyFunc(logger *zap.Logger, retries int) rules.NotifyFunc {
 		if len(alerts) == 0 {
 			return
 		}
-		var newAlerts []*Alert
-		for _, alert := range alerts {
-			newAlerts = append(newAlerts, (*Alert)(alert))
+		var _alerts = make([]view.Alert, 0, len(alerts))
+		for _, item := range alerts {
+			_alerts = append(_alerts, view.Alert{
+				ActiveAt: item.ActiveAt,
+				Annotations: view.Annotations{
+					Description: item.Labels.Get("description"),
+					Summary:     item.Labels.Get("summary"),
+					RuleId:      uint(mustInt(item.Labels.Get("rule_id"))),
+				},
+				FiredAt:    item.FiredAt,
+				Labels:     item.Labels,
+				LastSentAt: item.LastSentAt,
+				ResolvedAt: item.ResolvedAt,
+				State:      int(item.State),
+				ValidUntil: item.ValidUntil,
+				Value:      item.Value,
+			})
 		}
-		data, err := json.Marshal(newAlerts)
-		if err != nil {
-			logger.Error("encode json fail:" + err.Error())
-			return
-		}
-		for i := 0; i < retries; i++ {
-			err := AlertService.PushNotify(data)
-			if err != nil {
-				logger.Error("notify error"+err.Error(), zap.Int("retries", i))
-				time.Sleep(time.Second)
-			} else {
-				logger.Info("notify success")
-				return
-			}
-		}
+		AlertService.HandleAlerts(_alerts)
+	}
+}
+
+func mustInt(str string) int {
+	a, err := strconv.Atoi(str)
+	if err != nil {
+		return 0
+	} else {
+		return a
 	}
 }
 

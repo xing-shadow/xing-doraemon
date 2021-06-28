@@ -155,7 +155,7 @@ func (r *Reloader) getPromRules() ([]PromRules, error) {
 				Expr:        rule.Expr,
 				Op:          rule.Op,
 				Value:       rule.Value,
-				For:         strconv.Itoa(rule.For),
+				For:         strconv.Itoa(rule.Duration),
 				Labels:      nil,
 				Summary:     rule.Summary,
 				Description: rule.Description,

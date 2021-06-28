@@ -54,7 +54,3 @@ func (ctx *Context) WithData(data interface{}) RespOption {
 func (ctx *Context) WithBinder(binder binding.Binding) {
 	ctx.Binding = binder
 }
-
-func (ctx *Context) Bind(i interface{}) {
-
-}

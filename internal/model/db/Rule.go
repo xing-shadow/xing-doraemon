@@ -10,7 +10,7 @@ type Rule struct {
 	Expr        string //PromQL
 	Op          string //算数运算符
 	Value       string //阈值
-	For         int    //持续时间
+	Duration    int    //持续时间
 	Summary     string //简介
 	Description string //描述
 	Prom        Prom   `gorm:"foreignKey:PromID;"`

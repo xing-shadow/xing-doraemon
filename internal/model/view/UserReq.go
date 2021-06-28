@@ -6,18 +6,18 @@ type LoginReq struct {
 }
 
 type UserListReq struct {
-	Page     uint `json:"page"`
-	PageSize uint `json:"page_size"`
+	Page     uint `query:"page"`
+	PageSize uint `query:"page_size"`
 }
 
 type UserCreateReq struct {
-	UserName string `json:"user_name"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 type UserUpdateReq struct {
 	Id       uint   `json:"id"`
-	UserName string `json:"user_name"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 

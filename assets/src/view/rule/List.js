@@ -1,14 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { Modal, Form, Button, Input,Select,message,Space ,Popconfirm,Table,InputNumber,Pagination} from 'antd';
-import {GetPromAllName,GetPlanAllName} from '../../api/index';
+import {GetPlanAllName} from '../../api/plan';
+import {GetPromAllName} from "../../api/prom"
 import {GetRule,AddRule,GetRuleList,EditRule,DeleteRule} from  '../../api/rule';
 const { Option } = Select;
 const layout = {
     labelCol: { span: 6 },
     wrapperCol: { offset: 1 },
 };
-
-
 
 class RuleList extends Component {
     constructor(props) {

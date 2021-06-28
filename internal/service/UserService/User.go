@@ -54,11 +54,7 @@ func UserList(req view.UserListReq) (resp view.UserListResp, err error) {
 		pageSize = req.PageSize
 	}
 	offset = (page - 1) * pageSize
-	err = opt.DB.Select("id, name").Offset(offset).Limit(pageSize).Find(&users).Error
-	if err != nil {
-		return view.UserListResp{}, err
-	}
-	err = opt.DB.Table(db.User{}.TableName()).Count(&count).Error
+	err = opt.DB.Table(db.User{}.TableName()).Select("id, name").Count(&count).Offset(offset).Limit(pageSize).Find(&users).Error
 	if err != nil {
 		return view.UserListResp{}, err
 	}
@@ -76,7 +72,7 @@ func UserList(req view.UserListReq) (resp view.UserListResp, err error) {
 
 func CreateUser(req view.UserCreateReq) (err error) {
 	var user db.User
-	err = opt.DB.Select("id").Where("name=?", req.UserName).First(&user).Error
+	err = opt.DB.Select("id").Where("name=?", req.Username).First(&user).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return err
 	}
@@ -85,7 +81,7 @@ func CreateUser(req view.UserCreateReq) (err error) {
 	}
 	md5Password := Utils.Md5ToHex([]byte(req.Password))
 	err = opt.DB.Save(&db.User{
-		Name:     req.UserName,
+		Name:     req.Username,
 		Password: md5Password,
 	}).Error
 	return
@@ -95,9 +91,12 @@ func UpdateUserPasswd(req view.UserUpdateReq) (err error) {
 	var user db.User
 	err = opt.DB.Where("id=?", req.Id).First(&user).Error
 	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			err = errors.New("该记录不存在")
+		}
 		return err
 	}
-	if user.Name != req.UserName {
+	if user.Name != req.Username {
 		err = errors.New("用户信息错误")
 		return
 	}
